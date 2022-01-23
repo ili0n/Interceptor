@@ -9,19 +9,25 @@ class Projectile(object):
     _polygon = None
     _point = None
 
-    def __init__(self, polygon, path=None):
+    def __init__(self, polygon, path=None, A=20, Cd=0.5):
         self._acceleration = 12
-        self._initial_velocity = 20
+        self._velocity = 20
         self._polygon = polygon
         self._set_point()
         self._path = path
+        self._A = A
+        self._Cd = Cd
 
     def _set_point(self):
         pass
-        # TODO nemanja dodaj sta treba
 
-    def _calculate_drag(self):
-        return 0  # TODO calculate drag
+    def _calculate_drag(self, A, Cd, ro=0.5):
+        # CD coefficient of drag
+        # ro air density
+        # v velocity
+        # A reference area
+        D = self._Cd * ro * (self._velocity**2 * self._A) / 2
+        return D
 
     def _calculate_current_velocity(self):
         path_prime = np.polyder(self._path)
