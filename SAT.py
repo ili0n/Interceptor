@@ -3,15 +3,15 @@ import numpy as np
 
 class Polygon(object):
     def __init__(self, vertices):
-        self.vertices = vertices
+        self._vertices = vertices
 
-    # @vertices.setter
-    # def vertices(self, val):
-    #     self._vertices = val
-    #
-    # @property
-    # def vertices(self):
-    #     return self._vertices
+    @property
+    def vertices(self):
+        return self._vertices
+
+    @vertices.setter
+    def vertices(self, val):
+        self._vertices = val
 
     def perpendicular(self, i):
         i1 = i
