@@ -103,5 +103,10 @@ def main_loop():
     plt.show()
 
 
+def is_collision():
+    pass
+#TODO add colllision detection call to tihs function
+
+
 if __name__ == '__main__':
     main_loop()
