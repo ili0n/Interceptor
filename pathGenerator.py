@@ -1,5 +1,4 @@
 import numpy as np
-
 import nans_lib
 
 
@@ -8,6 +7,7 @@ class PathGenerator:
     _enemy_target = None
     _my_start = None
     _enemy_path_order = None
+    _file_path = None
 
     def __init__(self):
         self._enemy_start = np.array([0, 1000])
@@ -15,6 +15,8 @@ class PathGenerator:
         self._my_start = np.array([500, 1000])
         self._enemy_path_order = 2
         # order = 2 is natural due to curvature of Earth, and taking shortest possible path, and gravity being weaker away from surface
+
+        self._file_path = "enemy_middle_points"
 
     def generate_enemy_path(self, middle_point):
         x = [self._enemy_start[0], middle_point[0], self._enemy_target[0]]
@@ -43,3 +45,15 @@ class PathGenerator:
         p = nans_lib.least_squares_regression(x, y, order)
 
         return lambda v: np.polyval(p, v)
+
+    def get_enemy_point_from_file(self, line_index):
+        enemy_point_file = open(self._file_path, "r")
+        lines = enemy_point_file.readlines()
+        if len(lines) <= line_index:
+            x = float(lines[-1].split("|")[0])
+            y = float(lines[-1].split("|")[1])
+        else:
+            x = float(lines[line_index].split("|")[0])
+            y = float(lines[line_index].split("|")[1])
+
+        return self.generate_enemy_path(np.array([x, y]))
