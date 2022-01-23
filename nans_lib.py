@@ -1,31 +1,60 @@
-def zero_false_position(f, a, b, errMax=10**-6, itMax=100):
+import numpy as np
+
+
+def lagrange_interpolation(x, fX):
     '''
-    Finds the zero of a function using the FalsePosition method
+    Finds the Lagrange polynomial for given points
 
             Parameters:
-                    f(function): Target function
-                    a(np.array, 1d): Left boundry
-                    b(np.array, 1d): Right boundry
-                    errMax(float): Maximum allowed error
-                    itMax(int): Maximum number of iterations
+                    x(np.array, 1d): Points on x axis
+                    fX(np.array, 1d): Points on y axis
 
             Returns:
-                    x(np.array, 1d): x where f(x)==0
-                    it: number of performed iterations
+                    p(np.array, 1d): Lagrange polynomial coefficients such that
+                                     L = p[0]*x**(N-1) + p[1]*x**(N-2) + ... + p[N-2]*x + p[N-1]
     '''
-    for it in range(itMax):
-        fA = f(a)
-        fB = f(b)
-        zero = b - fB*(b - a)/(fB - fA)
+    order = x.size
 
-        fZero = f(zero)
+    p = 0
 
-        if abs(fZero) < errMax or abs(b - a) < errMax:
-            return zero, it
+    for itFX in range(order):
+        lNumer = 1
+        lDenom = 1
 
-        if fA*fZero < 0:
-            b = zero
-        else:
-            a = zero
+        for itX in range(itFX):
+            lNumer = np.convolve(lNumer, np.array([1, -x[itX]]))
+            lDenom = lDenom * (x[itFX] - x[itX])
 
-    return zero, it
+        for itX in range(itFX + 1, order):
+            lNumer = np.convolve(lNumer, np.array([1, -x[itX]]))
+            lDenom = lDenom * (x[itFX] - x[itX])
+
+        p = p + lNumer / lDenom * fX[itFX]
+
+    return p
+
+
+def least_squares_regression(x, fX, order):
+    '''
+    Performs least-squares regression with polynomial of given order
+
+            Parameters:
+                    x(np.array, 1d): Points on x axis
+                    fX(np.array, 1d): Points on y axis
+                    order(int): Polynomial order
+
+            Returns:
+                    p(np.array, 1d): Polynomial coefficients of the least-squares solution such that
+                                     R = p[0]*x**(N-1) + p[1]*x**(N-2) + ... + p[N-2]*x + p[N-1]
+    '''
+    n = x.size
+    m = min(order + 1, n)
+    A = np.zeros((n, m))
+
+    for it in range(m):
+        A[:, it] = x ** (it)
+
+    a = np.linalg.solve(np.matmul(A.T, A), np.matmul(A.T, fX))
+
+    p = a[::-1]
+    return p

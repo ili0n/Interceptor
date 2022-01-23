@@ -1,0 +1,3 @@
+Points are defined as np.array([x,y])
+x = point[0]
+y = point[1]
