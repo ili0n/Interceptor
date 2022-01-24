@@ -12,7 +12,7 @@ class Window(arcade.Window):
         arcade.draw_lrwh_rectangle_textured(0, 0,
                                             self.width, self.height,
                                             self.background)
-        
+
 
 
 if __name__ == '__main__':
