@@ -8,25 +8,23 @@ class Projectile(object):
     path = None
     _polygon = None
     _point = None
+    _sprite = None
 
     def __init__(self, polygon, path=None, A=20, Cd=0.5):
+        self._A = A
         self._acceleration = 12
         self._velocity = 20
         self._polygon = polygon
-        self._set_point()
+        self._point = polygon[0]
         self._path = path
-        self._A = A
         self._Cd = Cd
-
-    def _set_point(self):
-        pass
 
     def _calculate_drag(self, A, Cd, ro=0.5):
         # CD coefficient of drag
         # ro air density
         # v velocity
         # A reference area
-        D = self._Cd * ro * (self._velocity**2 * self._A) / 2
+        D = self._Cd * ro * (self._velocity ** 2 * self._A) / 2
         return D
 
     def _calculate_current_velocity(self):
@@ -38,7 +36,8 @@ class Projectile(object):
         velocity_x = self._velocity * np.cos(angle)
         velocity_y = self._velocity * np.sin(angle) - scipy.constants.g
 
-        self._velocity = np.sqrt(velocity_y ** 2 + velocity_x ** 2) + self._acceleration - self._calculate_drag()
+        self._velocity = np.sqrt(velocity_y ** 2 + velocity_x ** 2) + self._acceleration \
+                         - self._calculate_drag(self._A, self._Cd)
 
         return distance
 
@@ -58,3 +57,11 @@ class Projectile(object):
     def gat_traveled_distance(self):
         distance = self._calculate_current_velocity()
         return distance
+
+    @property
+    def sprite(self):
+        return self._sprite
+
+    @sprite.setter
+    def sprite(self, sprite):
+        self._sprite = sprite
