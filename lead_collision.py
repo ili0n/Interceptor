@@ -17,6 +17,7 @@ def find_vector_circle_intersection(a, b, c, radius):
     bq = np.dot(2 * (a - c), b)
     cq = np.linalg.norm(a - c) ** 2 - radius**2
 
+    # solve equation
     t1 = (-bq - np.sqrt(bq**2 - 4 * aq * cq)) / (2 * aq)
     t2 = (-bq + np.sqrt(bq**2 - 4 * aq * cq)) / (2 * aq)
 
@@ -42,8 +43,10 @@ def lead_collision(vl, rl, vt, rt):
         intersection = dist2
     else:
         intersection = dist1
+
     # lead direction is from intersection to center of circle
     lead_direction = (rt + vt) - intersection
+
     # with Thales theorem we find how long the vector should be
     ratio = np.linalg.norm(rt - rl) / (intersection - rl)
     result_vector = ratio * lead_direction
@@ -83,5 +86,8 @@ if __name__ == '__main__':
     x, y = line(rl, rl + result)
     plt.plot(x, y)
     plt.show()
+
+
+
 
 
