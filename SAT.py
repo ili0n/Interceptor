@@ -3,15 +3,15 @@ import numpy as np
 
 class Polygon(object):
     def __init__(self, vertices):
-        self.vertices = vertices
+        self._vertices = vertices
 
-    # @vertices.setter
-    # def vertices(self, val):
-    #     self._vertices = val
-    #
-    # @property
-    # def vertices(self):
-    #     return self._vertices
+    @property
+    def vertices(self):
+        return self._vertices
+
+    @vertices.setter
+    def vertices(self, val):
+        self._vertices = val
 
     def perpendicular(self, i):
         i1 = i
@@ -40,9 +40,9 @@ def is_colliding(a, b):
 
 
 if __name__ == '__main__':
-    # a = Polygon(np.array([[1, 1], [1, 2], [2, 2], [2, 1]], dtype="f"))
-    # b = Polygon(np.array([[2, 1.5], [2, 1.75], [2.5, 1.75], [2.5, 1.5]], dtype="f"))
-    # print(is_colliding(a, b))
+    a = Polygon(np.array([[1, 1], [1, 2], [2, 2], [2, 1]], dtype="f"))
+    b = Polygon(np.array([[2, 1.5], [2, 1.75], [2.5, 1.75], [2.5, 1.5]], dtype="f"))
+    print(is_colliding(a, b))
 
     a = Polygon(np.array([[1, 1], [1, 2], [2, 2], [2, 1]], dtype="f"))
     b = Polygon(np.array([[1, 1.5], [1, 1.75], [2.5, 1.75], [2.5, 1.5]], dtype="f"))
