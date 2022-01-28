@@ -21,7 +21,7 @@ class Projectile(object):
     def _set_point(self):
         pass
 
-    def _calculate_drag(self, A, Cd, ro=0.5):
+    def _calculate_drag(self, ro=0.5):
         # CD coefficient of drag
         # ro air density
         # v velocity
