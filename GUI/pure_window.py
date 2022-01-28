@@ -1,4 +1,7 @@
 import arcade
+import numpy as np
+
+import projectile
 
 
 class PureWindow(arcade.Window):
@@ -24,7 +27,11 @@ class PureWindow(arcade.Window):
 
 
 if __name__ == '__main__':
+    np.array([
+        [100,100]
+    ])
+    enemy = projectile.Projectile()
 
-    # PureWindow(1500, 1000, "pure")
+     PureWindow(1500, 1000, "pure")
 
     arcade.run()
