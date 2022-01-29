@@ -49,19 +49,22 @@ class PlayerProjectile():
         vector_of_prediction = np.array([norm, 0])
         vector_of_prediction = np.dot(rot, vector_of_prediction)
 
-        # we have length of vector
+        # we have length of friendly vector
         norm = 100
-        # we have angle of vector
+        # we have angle of friendly vector
         theta = np.deg2rad(self.angle1)
         rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
         # we form vector and rotate it
         vector_of_movements = np.array([norm, 0])
         vector_of_movements = np.dot(rot, vector_of_movements)
+
         push = self._max_engine * lead_collision.lead_collision(vector_of_movements, self._point, vector_of_prediction, enemy.point)
+        # calculate new angle
         i = np.array([1, 0])
         cos = np.dot(push, i) / np.linalg.norm(push) / np.linalg.norm(i)
         self._angle1 = np.arccos(cos)
 
+        # new angle points to enemy rocket
         self._previous_angle2 = self._angle2
         between = self.point - enemy.point
         i = np.array([1, 0])
