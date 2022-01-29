@@ -1,1 +1,109 @@
-class
+import numpy as np
+import scipy.constants
+
+import nans_lib
+from SAT import Polygon
+
+
+class PlayerProjectile():
+    def __init__(self,inital_point, max_engine=50000, mass=1500, A=20, Cd=0.5):
+        self._scale =0.05
+        self._A = A
+        self._acceleration = 12
+        self._velocity = 20
+        self._point = inital_point
+        self._polygon = Polygon(np.array([
+            [self._point[0],self._point[1]+850*self._scale],
+            [self._point[0]+200*self._scale,self._point[1]+820*self._scale],
+            [self._point[0]-200*self._scale,self._point[1]+820*self._scale],
+            [self._point[0]+200*self._scale,self._point[1]-820*self._scale],
+            [self._point[0]-200*self._scale,self._point[1]-820*self._scale]], dtype="f"))
+        self._Cd = Cd
+        self._mass = mass
+        self._weight = scipy.constants.g * mass
+        self._angle1 = 0
+        self._angle2 = 0.9
+        self._previous_angle2 =0
+        self._s = 0
+        self._max_engine = max_engine
+
+    def _calculate_drag(self, ro=0.5):
+        # CD coefficient of drag
+        # ro air density
+        # v velocity
+        # A reference area
+        D = self._Cd * ro * (self._velocity ** 2 * self._A) / 2
+        return D
+
+    def calculate_path_force(self):
+        drag = self._calculate_drag()
+        drag_x = drag * np.cos(self._angle1)
+        drag_y = drag * np.sin(self._angle1)
+        push = self._max_engine * np.sin(self._angle1) - self._weight - drag_y +
+
+        func = lambda x: np.polyval(self._path, x) \
+                         - np.sqrt((push(x) * np.sin(self._angle1) - drag_y - self._weight) ** 2 + (
+                push(x) * np.cos(self._angle1) - drag_x) ** 2)
+        zero_x, it = nans_lib.zeroBisection(func, self._point[0], self._point[0] + 50)
+        zero_y = np.polyval(self._path, zero_x)
+
+        F = np.sqrt((self._point[0] - zero_x) ** 2 + (self._point[1] - zero_y) ** 2)
+
+        self._previous_angle2, self._angle2 =self._angle2,  np.arctan((zero_y - self._point[1]) / (zero_x - self._point[0]))
+        return F, lambda x: (zero_y - self._point[1]) / (zero_x - self._point[0]) * (x - self._point[0]) + self._point[
+            1]
+
+    def calculate_distance(self, t):
+        F, func = self.calculate_path_force()
+        dds = lambda *argv: F / self._mass
+        tb = t + 1 / 60
+        h = 1 / 1000
+
+        fx_rk4 = nans_lib.rk4N(t, tb, h, np.array([self._s, self._velocity]), dds)
+        self._s += fx_rk4[-1][-1][-1]
+        self._velocity = nans_lib.rk4WithoutPlot(t, tb, h, self._velocity, dds)[-1]
+        self._update_points(fx_rk4[-1][-1][-1])
+        return fx_rk4[-1]
+
+    def _update_points(self, distance):
+        dist_arr = np.array([distance * np.cos(self._angle1), distance * np.sin(self._angle1)])
+        self._point += dist_arr
+        for i in self._polygon.vertices:
+            i+= dist_arr
+            temp_x = i[0] - self._point[0]
+            temp_y = i[1] - self._point[1]
+
+            # now apply rotatio
+            angle_radians = self._angle2 - self._previous_angle2
+            cos_angle = np.cos(angle_radians)
+            sin_angle = np.sin(angle_radians)
+            rotated_x = temp_x * cos_angle - temp_y * sin_angle
+            rotated_y = temp_x * sin_angle + temp_y * cos_angle
+
+            # translate back
+            i[0] = rotated_x + self._point[0]
+            i[1] = rotated_y + self._point[1]
+        print(self._polygon.vertices)
+
+    @property
+    def sprite(self):
+        return self._sprite
+
+    @sprite.setter
+    def sprite(self, sprite):
+        self._sprite = sprite
+
+    @property
+    def angle1(self):
+        return self._angle1
+    @property
+    def angle2(self):
+        return self._angle2
+
+    @property
+    def previous_angle2(self):
+        return self._previous_angle2
+
+    @property
+    def point(self):
+        return self._point

@@ -1,6 +1,6 @@
 import arcade
 
-import GUI.pure_window
+import GUI.lead_window
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':

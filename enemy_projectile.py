@@ -16,24 +16,24 @@ class EnemyProjectile(object):
     # _sprite = None
 
     def __init__(self, path=None, max_engine=50000, mass=1500, A=20, Cd=0.5):
-        self._scale =0.05
+        self._scale = 0.05
         self._A = A
         self._acceleration = 12
         self._velocity = 20
         self._point = np.array([0, np.polyval(path, 0)])
         self._polygon = Polygon(np.array([
-            [self._point[0],self._point[1]+850*self._scale],
-            [self._point[0]+200*self._scale,self._point[1]+820*self._scale],
-            [self._point[0]-200*self._scale,self._point[1]+820*self._scale],
-            [self._point[0]+200*self._scale,self._point[1]-820*self._scale],
-            [self._point[0]-200*self._scale,self._point[1]-820*self._scale]], dtype="f"))
+            [self._point[0], self._point[1] + 850 * self._scale],
+            [self._point[0] + 200 * self._scale, self._point[1] + 820 * self._scale],
+            [self._point[0] - 200 * self._scale, self._point[1] + 820 * self._scale],
+            [self._point[0] + 200 * self._scale, self._point[1] - 820 * self._scale],
+            [self._point[0] - 200 * self._scale, self._point[1] - 820 * self._scale]], dtype="f"))
         self._path = path
         self._Cd = Cd
         self._mass = mass
         self._weight = scipy.constants.g * mass
         self._angle1 = 0
         self._angle2 = 0.9
-        self._previous_angle2 =0
+        self._previous_angle2 = 0
         self._s = 0
 
     def _calculate_drag(self, ro=0.5):
@@ -60,7 +60,8 @@ class EnemyProjectile(object):
 
         F = np.sqrt((self._point[0] - zero_x) ** 2 + (self._point[1] - zero_y) ** 2)
 
-        self._previous_angle2, self._angle2 =self._angle2,  np.arctan((zero_y - self._point[1]) / (zero_x - self._point[0]))
+        self._previous_angle2, self._angle2 = self._angle2, np.arctan(
+            (zero_y - self._point[1]) / (zero_x - self._point[0]))
         return F, lambda x: (zero_y - self._point[1]) / (zero_x - self._point[0]) * (x - self._point[0]) + self._point[
             1]
 
@@ -80,7 +81,7 @@ class EnemyProjectile(object):
         dist_arr = np.array([distance * np.cos(self._angle1), distance * np.sin(self._angle1)])
         self._point += dist_arr
         for i in self._polygon.vertices:
-            i+= dist_arr
+            i += dist_arr
             temp_x = i[0] - self._point[0]
             temp_y = i[1] - self._point[1]
 
@@ -107,6 +108,7 @@ class EnemyProjectile(object):
     @property
     def angle1(self):
         return self._angle1
+
     @property
     def angle2(self):
         return self._angle2
@@ -118,6 +120,10 @@ class EnemyProjectile(object):
     @property
     def point(self):
         return self._point
+
+    @property
+    def polygon(self):
+        return self._polygon
 
 
 if __name__ == '__main__':

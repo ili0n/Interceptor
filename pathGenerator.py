@@ -57,3 +57,7 @@ class PathGenerator:
             y = float(lines[line_index].split("|")[1])
 
         return self.generate_enemy_path(np.array([x, y]))
+
+    @property
+    def enemy_target(self):
+        return self._enemy_target
