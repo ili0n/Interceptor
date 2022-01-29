@@ -24,7 +24,9 @@ class Projectile(object):
         self._Cd = Cd
         self._mass = mass
         self._weight = scipy.constants.g * mass
-        self._angle = 0
+        self._angle1 = 0
+        self._angle2 = 0.9
+        self._previous_angle2 =0
         self._s = 0
 
     def _calculate_drag(self, ro=0.5):
@@ -37,21 +39,21 @@ class Projectile(object):
 
     def calculate_path_force(self):
         path_prime = np.polyder(self._path)
-        self._angle = np.arctan(np.polyval(path_prime, self._point[0]))
+        self._angle1 = np.arctan(np.polyval(path_prime, self._point[0]))
         drag = self._calculate_drag()
-        drag_x = drag * np.cos(self._angle)
-        drag_y = drag * np.sin(self._angle)
-        push = lambda x: np.tan(self._angle) * (x - self._point[0]) + self._point[1]
+        drag_x = drag * np.cos(self._angle1)
+        drag_y = drag * np.sin(self._angle1)
+        push = lambda x: np.tan(self._angle1) * (x - self._point[0]) + self._point[1]
 
         func = lambda x: np.polyval(self._path, x) \
-                         - np.sqrt((push(x) * np.sin(self._angle) - drag_y - self._weight) ** 2 + (
-                push(x) * np.cos(self._angle) - drag_x) ** 2)
+                         - np.sqrt((push(x) * np.sin(self._angle1) - drag_y - self._weight) ** 2 + (
+                push(x) * np.cos(self._angle1) - drag_x) ** 2)
         zero_x, it = nans_lib.zeroBisection(func, self._point[0], self._point[0] + 50)
         zero_y = np.polyval(self._path, zero_x)
 
         F = np.sqrt((self._point[0] - zero_x) ** 2 + (self._point[1] - zero_y) ** 2)
 
-        self._angle = np.arctan((zero_y - self._point[1]) / (zero_x - self._point[0]))
+        self._previous_angle2, self._angle2 =self._angle2,  np.arctan((zero_y - self._point[1]) / (zero_x - self._point[0]))
         return F, lambda x: (zero_y - self._point[1]) / (zero_x - self._point[0]) * (x - self._point[0]) + self._point[
             1]
 
@@ -68,7 +70,7 @@ class Projectile(object):
         return fx_rk4[-1]
 
     def _update_points(self, distance):
-        dist_arr = np.array([distance * np.cos(self._angle), distance * np.sin(self._angle)])
+        dist_arr = np.array([distance * np.cos(self._angle1), distance * np.sin(self._angle1)])
         self._point += dist_arr
         # for i in self._polygon:
         #     i += dist_arr
@@ -82,8 +84,15 @@ class Projectile(object):
         self._sprite = sprite
 
     @property
-    def angle(self):
-        return self._angle
+    def angle1(self):
+        return self._angle1
+    @property
+    def angle2(self):
+        return self._angle2
+
+    @property
+    def previous_angle2(self):
+        return self._previous_angle2
 
     @property
     def point(self):
