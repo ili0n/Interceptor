@@ -4,9 +4,10 @@ import scipy.constants
 
 import nans_lib
 import pathGenerator
+from SAT import Polygon
 
 
-class Projectile(object):
+class EnemyProjectile(object):
     # _acceleration = 0
     # _velocity = 0
     # path = None
@@ -15,11 +16,17 @@ class Projectile(object):
     # _sprite = None
 
     def __init__(self, path=None, max_engine=50000, mass=1500, A=20, Cd=0.5):
+        self._scale =0.05
         self._A = A
         self._acceleration = 12
         self._velocity = 20
-        self._polygon = None
         self._point = np.array([0, np.polyval(path, 0)])
+        self._polygon = Polygon(np.array([
+            [self._point[0],self._point[1]+850*self._scale],
+            [self._point[0]+200*self._scale,self._point[1]+820*self._scale],
+            [self._point[0]-200*self._scale,self._point[1]+820*self._scale],
+            [self._point[0]+200*self._scale,self._point[1]-820*self._scale],
+            [self._point[0]-200*self._scale,self._point[1]-820*self._scale]], dtype="f"))
         self._path = path
         self._Cd = Cd
         self._mass = mass
@@ -72,8 +79,22 @@ class Projectile(object):
     def _update_points(self, distance):
         dist_arr = np.array([distance * np.cos(self._angle1), distance * np.sin(self._angle1)])
         self._point += dist_arr
-        # for i in self._polygon:
-        #     i += dist_arr
+        for i in self._polygon.vertices:
+            i+= dist_arr
+            temp_x = i[0] - self._point[0]
+            temp_y = i[1] - self._point[1]
+
+            # now apply rotatio
+            angle_radians = self._angle2 - self._previous_angle2
+            cos_angle = np.cos(angle_radians)
+            sin_angle = np.sin(angle_radians)
+            rotated_x = temp_x * cos_angle - temp_y * sin_angle
+            rotated_y = temp_x * sin_angle + temp_y * cos_angle
+
+            # translate back
+            i[0] = rotated_x + self._point[0]
+            i[1] = rotated_y + self._point[1]
+        print(self._polygon.vertices)
 
     @property
     def sprite(self):
@@ -102,7 +123,7 @@ class Projectile(object):
 if __name__ == '__main__':
     pg = pathGenerator.PathGenerator()
     path = pg.generate_enemy_path(np.array([500, 500]))
-    p1 = Projectile(path)
+    p1 = EnemyProjectile(path)
     print(path)
     pts = np.linspace(0, 1000, 200)
     f = lambda x: np.polyval(path, x)

@@ -2,7 +2,7 @@ import arcade
 import numpy as np
 
 import pathGenerator
-import projectile
+import enemy_projectile
 
 
 class PureWindow(arcade.Window):
@@ -34,7 +34,7 @@ class PureWindow(arcade.Window):
         self._enemy.calculate_distance(self._counter)
         self._enemy.sprite.set_position(self._enemy.point[0],self._enemy.point[1])
         # self.
-        print((180/np.pi)*((self._enemy.angle2 - self._enemy.previous_angle2)))
+        print((180/np.pi) * (self._enemy.angle2 - self._enemy.previous_angle2))
         self.sprites_list[0].turn_right ((180/np.pi)*abs((self._enemy.angle2 - self._enemy.previous_angle2)))
         self.sprites_list.update()
 
@@ -42,7 +42,7 @@ class PureWindow(arcade.Window):
 if __name__ == '__main__':
     pg = pathGenerator.PathGenerator()
     path = pg.generate_enemy_path(np.array([500, 800]))
-    enemy = projectile.Projectile(path)
+    enemy = enemy_projectile.EnemyProjectile(path)
     enemy.sprite = arcade.sprite.Sprite("resources/enemy.png",0.05)
 
     PureWindow(1500, 1000, "pure", enemy)
