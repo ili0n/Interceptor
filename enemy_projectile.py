@@ -19,7 +19,7 @@ class EnemyProjectile(object):
         self._scale = 0.05
         self._A = A
         self._acceleration = 12
-        self._velocity = 15
+        self._velocity = 10
         self._point = np.array([0, np.polyval(path, 0)])
         self._polygon = Polygon(np.array([
             [self._point[0], self._point[1] + 850 * self._scale],

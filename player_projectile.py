@@ -10,7 +10,7 @@ class PlayerProjectile():
         self._scale =0.05
         self._A = A
         self._acceleration = 12
-        self._velocity = 15
+        self._velocity = 17
         self._point = inital_point
         self._polygon = Polygon(np.array([
             [self._point[0],self._point[1]+850*self._scale],
@@ -63,7 +63,10 @@ class PlayerProjectile():
         self._angle1 = np.arccos(cos)
 
         self._previous_angle2 = self._angle2
-
+        between = self.point - enemy.point
+        i = np.array([1, 0])
+        cos = np.dot(between, i) / np.linalg.norm(between) / np.linalg.norm(i)
+        self._angle2 = np.arccos(cos)
         return 100
 
     def calculate_distance(self, t, enemy):
