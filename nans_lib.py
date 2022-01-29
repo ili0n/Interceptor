@@ -1,6 +1,21 @@
 import numpy as np
 
 
+def rk4WithoutPlot(a, b, h, fX0, dfX):
+    x = np.arange(a, b, h)
+    n = len(x)
+    fX = np.zeros(n)
+    fX[0] = fX0
+
+    for it in range(1,n):
+        k1 = dfX(x[it - 1], fX[it -1])
+        k2 = dfX(x[it - 1] + h/2, fX[it -1] + k1*h/2)
+        k3 = dfX(x[it - 1] + h/2,  fX[it -1] + k2*h/2)
+        k4 = dfX(x[it - 1] + h,  fX[it -1] + k3*h)
+
+        fX[it] = fX[it - 1] + h/6*(k1 + 2*k2 + 2*k3 + k4)
+    return fX
+
 def rk4N(a, b, h, nfX0, dnfX):
     x = np.arange(a, b, h)
     n = len(x)
@@ -59,6 +74,8 @@ def rk4N(a, b, h, nfX0, dnfX):
 
     fX = fnX[0, :]
     return fX, fnX.T
+
+
 
 
 def zeroBisection(f, a, b, errMax=0.0001, itMax=100):

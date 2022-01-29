@@ -10,8 +10,8 @@ class PathGenerator:
     _file_path = None
 
     def __init__(self):
-        self._enemy_start = np.array([0, 1000])
-        self._enemy_target = np.array([1000, 1000])
+        self._enemy_start = np.array([0, 0])
+        self._enemy_target = np.array([1000, 0])
         self._my_start = np.array([500, 1000])
         self._enemy_path_order = 2
         # order = 2 is natural due to curvature of Earth, and taking shortest possible path, and gravity being weaker away from surface
@@ -19,12 +19,12 @@ class PathGenerator:
         self._file_path = "enemy_middle_points"
 
     def generate_enemy_path(self, middle_point):
-        x = [self._enemy_start[0], middle_point[0], self._enemy_target[0]]
-        f_x = [self._enemy_start[1], middle_point[1], self._enemy_target[1]]
+        x =np.array([self._enemy_start[0], middle_point[0], self._enemy_target[0]])
+        f_x = np.array([self._enemy_start[1], middle_point[1], self._enemy_target[1]])
 
         p = nans_lib.lagrange_interpolation(x, f_x)
 
-        return lambda v: np.polyval(p, v)
+        return p
 
     def approximate_enemy_path(self, points):
         x = []

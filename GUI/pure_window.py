@@ -1,12 +1,13 @@
 import arcade
 import numpy as np
 
+import pathGenerator
 import projectile
 
 
 class PureWindow(arcade.Window):
 
-    def __init__(self, width, height, title, enemy, player):
+    def __init__(self, width, height, title, enemy):
         super().__init__(width, height, title)
         self.set_location(200, 200)
         self._enemy = enemy
@@ -27,11 +28,11 @@ class PureWindow(arcade.Window):
 
 
 if __name__ == '__main__':
-    np.array([
-        [100,100]
-    ])
-    enemy = projectile.Projectile()
+    pg = pathGenerator.PathGenerator()
+    path = pg.generate_enemy_path(np.array([500, 500]))
+    enemy = projectile.Projectile(path)
+    enemy.sprite = arcade.sprite.Sprite("resources/enemy.png")
 
-     PureWindow(1500, 1000, "pure")
+    PureWindow(1500, 1000, "pure", enemy)
 
-    arcade.run()
+arcade.run()
