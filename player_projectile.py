@@ -1,16 +1,16 @@
 import numpy as np
 import scipy.constants
-
+import lead_collision
 import nans_lib
 from SAT import Polygon
 
 
 class PlayerProjectile():
-    def __init__(self,inital_point, max_engine=50000, mass=1500, A=20, Cd=0.5):
+    def __init__(self,inital_point, max_engine=50, mass=1500, A=20, Cd=0.5):
         self._scale =0.05
         self._A = A
         self._acceleration = 12
-        self._velocity = 20
+        self._velocity = 17
         self._point = inital_point
         self._polygon = Polygon(np.array([
             [self._point[0],self._point[1]+850*self._scale],
@@ -22,7 +22,7 @@ class PlayerProjectile():
         self._mass = mass
         self._weight = scipy.constants.g * mass
         self._angle1 = 0
-        self._angle2 = 0.9
+        self._angle2 = 2.2
         self._previous_angle2 =0
         self._s = 0
         self._max_engine = max_engine
@@ -35,26 +35,45 @@ class PlayerProjectile():
         D = self._Cd * ro * (self._velocity ** 2 * self._A) / 2
         return D
 
-    def calculate_path_force(self):
+    def calculate_path_force(self, enemy):
         drag = self._calculate_drag()
         drag_x = drag * np.cos(self._angle1)
         drag_y = drag * np.sin(self._angle1)
-        push = self._max_engine * np.sin(self._angle1) - self._weight - drag_y +
 
-        func = lambda x: np.polyval(self._path, x) \
-                         - np.sqrt((push(x) * np.sin(self._angle1) - drag_y - self._weight) ** 2 + (
-                push(x) * np.cos(self._angle1) - drag_x) ** 2)
-        zero_x, it = nans_lib.zeroBisection(func, self._point[0], self._point[0] + 50)
-        zero_y = np.polyval(self._path, zero_x)
+        # we have length of vector for enemy direction
+        norm, _ = enemy.calculate_path_force()
+        # we have angle of vector
+        theta = np.deg2rad(enemy.angle1)
+        rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+        # we form vector and rotate it
+        vector_of_prediction = np.array([norm, 0])
+        vector_of_prediction = np.dot(rot, vector_of_prediction)
 
-        F = np.sqrt((self._point[0] - zero_x) ** 2 + (self._point[1] - zero_y) ** 2)
+        # we have length of friendly vector
+        norm = 100
+        # we have angle of friendly vector
+        theta = np.deg2rad(self.angle1)
+        rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+        # we form vector and rotate it
+        vector_of_movements = np.array([norm, 0])
+        vector_of_movements = np.dot(rot, vector_of_movements)
 
-        self._previous_angle2, self._angle2 =self._angle2,  np.arctan((zero_y - self._point[1]) / (zero_x - self._point[0]))
-        return F, lambda x: (zero_y - self._point[1]) / (zero_x - self._point[0]) * (x - self._point[0]) + self._point[
-            1]
+        push = self._max_engine * lead_collision.lead_collision(vector_of_movements, self._point, vector_of_prediction, enemy.point)
+        # calculate new angle
+        i = np.array([1, 0])
+        cos = np.dot(push, i) / np.linalg.norm(push) / np.linalg.norm(i)
+        self._angle1 = np.arccos(cos)
 
-    def calculate_distance(self, t):
-        F, func = self.calculate_path_force()
+        # new angle points to enemy rocket
+        self._previous_angle2 = self._angle2
+        between = self.point - enemy.point
+        i = np.array([1, 0])
+        cos = np.dot(between, i) / np.linalg.norm(between) / np.linalg.norm(i)
+        self._angle2 = np.arccos(cos)
+        return 100
+
+    def calculate_distance(self, t, enemy):
+        F = self.calculate_path_force(enemy)
         dds = lambda *argv: F / self._mass
         tb = t + 1 / 60
         h = 1 / 1000
@@ -67,7 +86,7 @@ class PlayerProjectile():
 
     def _update_points(self, distance):
         dist_arr = np.array([distance * np.cos(self._angle1), distance * np.sin(self._angle1)])
-        self._point += dist_arr
+        self._point += dist_arr.astype(int)
         for i in self._polygon.vertices:
             i+= dist_arr
             temp_x = i[0] - self._point[0]
@@ -96,6 +115,7 @@ class PlayerProjectile():
     @property
     def angle1(self):
         return self._angle1
+
     @property
     def angle2(self):
         return self._angle2
@@ -107,3 +127,8 @@ class PlayerProjectile():
     @property
     def point(self):
         return self._point
+
+    @property
+    def polygon(self):
+        return self._polygon
+

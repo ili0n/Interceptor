@@ -15,11 +15,11 @@ class EnemyProjectile(object):
     # _point = None
     # _sprite = None
 
-    def __init__(self, path=None, max_engine=50000, mass=1500, A=20, Cd=0.5):
+    def __init__(self, path=None, max_engine=50, mass=1500, A=20, Cd=0.5):
         self._scale = 0.05
         self._A = A
         self._acceleration = 12
-        self._velocity = 20
+        self._velocity = 10
         self._point = np.array([0, np.polyval(path, 0)])
         self._polygon = Polygon(np.array([
             [self._point[0], self._point[1] + 850 * self._scale],
@@ -66,7 +66,7 @@ class EnemyProjectile(object):
             1]
 
     def calculate_distance(self, t):
-        F, func = self.calculate_path_force()
+        F, _ = self.calculate_path_force()
         dds = lambda *argv: F / self._mass
         tb = t + 1 / 60
         h = 1 / 1000
@@ -96,6 +96,14 @@ class EnemyProjectile(object):
             i[0] = rotated_x + self._point[0]
             i[1] = rotated_y + self._point[1]
         print(self._polygon.vertices)
+
+    @property
+    def velocity(self):
+        return self._velocity
+
+    @velocity.setter
+    def velocity(self, val):
+        self._velocity = val
 
     @property
     def sprite(self):

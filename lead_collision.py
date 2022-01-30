@@ -36,21 +36,24 @@ def find_vector_circle_intersection(a, b, c, radius):
 
 def lead_collision(vl, rl, vt, rt):
     # we find closer intersection
-    r1, r2 = find_vector_circle_intersection(rl, rt - rl, rt + vt, np.dot(vt, vt))
-    dist1 = np.linalg.norm(r1)
-    dist2 = np.linalg.norm(r2)
+
+    circle_center = rt + vt
+    r1, r2 = find_vector_circle_intersection(rl, rt - rl, circle_center, np.dot(vl, vl))
+    dist1 = np.linalg.norm(r1 - rl)
+    dist2 = np.linalg.norm(r2 - rl)
     if dist1 > dist2:
-        intersection = dist2
+        intersection = r1
     else:
-        intersection = dist1
+        intersection = r2
 
     # lead direction is from intersection to center of circle
-    lead_direction = (rt + vt) - intersection
+    lead_direction = intersection - (rt + vt)
+    return lead_direction / np.linalg.norm(lead_direction)
 
-    # with Thales theorem we find how long the vector should be
-    ratio = np.linalg.norm(rt - rl) / (intersection - rl)
-    result_vector = ratio * lead_direction
-    return result_vector
+    # # with Thales theorem we find how long the vector should be
+    # ratio = np.linalg.norm(rt - rl) / (intersection - rl)
+    # result_vector = ratio * lead_direction
+    # return result_vector / np.linalg.norm(result_vector)
 
 
 def line(dot1, dot2):
@@ -60,10 +63,44 @@ def line(dot1, dot2):
 
 
 if __name__ == '__main__':
-    rl = np.array([1, 1])
-    vl = np.array([2, 2])
-    rt = np.array([5, 6])
-    vt = np.array([2, -1])
+    # rl = np.array([1, 1])
+    # vl = np.array([2, 2])
+    # rt = np.array([5, 6])
+    # vt = np.array([2, -1])
+    # plt.scatter(rl[0], rl[1])
+    # plt.scatter(vl[0], vl[1], c="black")
+    # plt.scatter(rt[0], rt[1])
+    # plt.scatter(vt[0], vt[1], c="black")
+    # plt.scatter((rt + vt)[0], (rt + vt)[1], c="yellow")
+    # x, y = line(rl, rt)
+    # plt.plot(x, y)
+    #
+    # x, y = line(rt, rt + vt)
+    # plt.plot(x, y)
+    #
+    # circle1 = plt.Circle(rt + vt, np.linalg.norm(vl), color='r', fill=False)
+    # plt.gca().add_patch(circle1)
+    #
+    # r1, r2 = find_vector_circle_intersection(rl, rt - rl, rt + vt, np.linalg.norm(vl))
+    # plt.scatter(r1[0], r1[1], c="green")
+    # plt.scatter(r2[0], r2[1], c="green")
+    # dist1 = np.linalg.norm(r1 - rl)
+    # dist2 = np.linalg.norm(r2 - rl)
+    # if dist1 > dist2:
+    #     print("r2")
+    # else:
+    #     print("r1")
+    # print("r1: ", r1)
+    # print("r2: ", r2)
+    #
+    # result = lead_collision(vl, rl, vt, rt)
+    # x, y = line(rl, rl + result)
+    # plt.plot(x, y)
+    # plt.show()
+    rl = np.array([760, 840])
+    vl = np.array([99, 4])
+    rt = np.array([354, 740])
+    vt = np.array([60, 1])
     plt.scatter(rl[0], rl[1])
     plt.scatter(vl[0], vl[1], c="black")
     plt.scatter(rt[0], rt[1])
@@ -81,6 +118,14 @@ if __name__ == '__main__':
     r1, r2 = find_vector_circle_intersection(rl, rt - rl, rt + vt, np.linalg.norm(vl))
     plt.scatter(r1[0], r1[1], c="green")
     plt.scatter(r2[0], r2[1], c="green")
+    dist1 = np.linalg.norm(r1 - rl)
+    dist2 = np.linalg.norm(r2 - rl)
+    if dist1 > dist2:
+        print("r2")
+    else:
+        print("r1")
+    print("r1: ", r1)
+    print("r2: ", r2)
 
     result = lead_collision(vl, rl, vt, rt)
     x, y = line(rl, rl + result)
