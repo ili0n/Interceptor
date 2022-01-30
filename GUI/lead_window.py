@@ -24,7 +24,7 @@ class LeadWindow(arcade.Window):
         self.sprites_list.append(target.sprite)
         self.sprites_list.append(friendly.sprite)
         # self.sprites_list.append(player.sprite)
-        self.set_update_rate(1/60)
+        self.set_update_rate(1 / 60)
         self._counter = 0
 
     # Creating on_draw() function to draw on the screen
@@ -44,12 +44,13 @@ class LeadWindow(arcade.Window):
         self._friendly.calculate_distance(self._counter, self._enemy)
         self._friendly.sprite.set_position(self._friendly.point[0], self._friendly.point[1])
         # self.
-        print((180/np.pi) * (self._enemy.angle2 - self._enemy.previous_angle2))
-        self.sprites_list[0].turn_right ((180/np.pi)*abs((self._enemy.angle2 - self._enemy.previous_angle2)))
+        print((180 / np.pi) * (self._enemy.angle2 - self._enemy.previous_angle2))
+        self.sprites_list[0].turn_right((180 / np.pi) * abs((self._enemy.angle2 - self._enemy.previous_angle2)))
 
         self.sprites_list[2].turn_left((180 / np.pi) * ((-self._friendly.angle2 + self._friendly.previous_angle2)))
         self.sprites_list.update()
-        if SAT.is_colliding(self._enemy.polygon, self._target.polygon) or SAT.is_colliding(self._enemy.polygon, self._friendly.polygon):
+        if SAT.is_colliding(self._enemy.polygon, self._target.polygon) or SAT.is_colliding(self._enemy.polygon,
+                                                                                           self._friendly.polygon):
             arcade.finish_render()
 
 
@@ -66,6 +67,6 @@ if __name__ == '__main__':
     friendly = player_projectile.PlayerProjectile(pg.enemy_target + np.array([300, 300]))
     friendly.sprite = arcade.sprite.Sprite("resources/player.png", 0.05)
 
-    LeadWindow(1500, 1000, "pure", enemy, trgt, friendly)
+    LeadWindow(1500, 1000, "Lead", enemy, trgt, friendly)
 
     arcade.run()

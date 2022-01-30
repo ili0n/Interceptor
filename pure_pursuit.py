@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 # def find_goal_point(func, x):
 #     return np.array([x, func(x)])
 
-def find_goal_point(my_point,enemy_points):
+def find_goal_point(my_point, enemy_points):
     potential_points = {}
     for i in range(len(my_point)):
         potential_points[abs(np.sqrt((enemy_points[i][0] - my_point[0]) ** 2 +
@@ -29,7 +29,7 @@ def find_goal_point(my_point,enemy_points):
     return value
 
 
-def calculate_new_position(goal_point, current_point, distance):
+def calculate_angle(goal_point, current_point, distance):
     leveled_current_point = np.array([current_point[0], 0])
     leveled_goal_point = np.array([goal_point[0], goal_point[1] - current_point[1]])
 
@@ -60,6 +60,13 @@ def calculate_new_position(goal_point, current_point, distance):
     arch = distance
     angle = arch / r
 
+    return angle, r, leveled_current_point, leveled_goal_point, center_point
+
+
+def calculate_new_position(goal_point, current_point, distance):
+    angle, r, leveled_current_point, leveled_goal_point, center_point = \
+        calculate_angle(goal_point, current_point, distance)
+
     distance_current = np.sqrt(r ** 2 + r ** 2 - 2 * r * r * np.cos(angle))
 
     # print(distance_current**2)
@@ -87,11 +94,11 @@ def main_loop():
     current_point = np.array([0, 0])
     x = 0
 
-    goal = find_goal_point(current_point, [np.array([np.inf,np.inf]), np.array([x,func(x)])])
+    goal = find_goal_point(current_point, [np.array([np.inf, np.inf]), np.array([x, func(x)])])
     print(goal)
     print(current_point)
     for i in range(100):
-        goal = find_goal_point(current_point, [np.array([np.inf,np.inf]), np.array([x,func(x)])])
+        goal = find_goal_point(current_point, [np.array([np.inf, np.inf]), np.array([x, func(x)])])
         print("G:", end=" ")
         print(goal)
         current_point = calculate_new_position(goal, current_point, 0.5)
@@ -101,12 +108,3 @@ def main_loop():
         x += 0.07
 
     plt.show()
-
-
-def is_collision():
-    pass
-#TODO add colllision detection call to tihs function
-
-
-if __name__ == '__main__':
-    main_loop()
