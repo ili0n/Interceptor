@@ -4,7 +4,7 @@ from SAT import Polygon
 
 
 class Player:
-    def __init__(self, starting_point):
+    def __init__(self, starting_point,speed):
         self._point = starting_point
         self._scale = 0.2
         self.angle = np.pi / 4
@@ -15,6 +15,17 @@ class Player:
             [self._point[0] - 250 * self._scale, self._point[1] + 250 * self._scale],
             [self._point[0] + 250 * self._scale, self._point[1] - 250 * self._scale],
             [self._point[0] - 250 * self._scale, self._point[1] - 250 * self._scale]], dtype="f"))
+        self._speed = speed
+
+    def move(self,x_inc,y_inc):
+        x_inc= int(x_inc)
+        y_inc = int(y_inc)
+        inc = np.array([x_inc,y_inc],dtype="f")
+
+        self._point+= inc
+
+        for i in self._polygon.vertices:
+            i+= inc
 
     @property
     def scale(self):
@@ -35,3 +46,7 @@ class Player:
     @sprite.setter
     def sprite(self,sprite):
         self._sprite = sprite
+
+    @property
+    def speed(self):
+        return self._speed
