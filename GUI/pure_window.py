@@ -87,7 +87,7 @@ class PlayerWindow(arcade.Window):
 if __name__ == "__main__":
     plr = player.Player(np.array([800, 800],dtype="f"),250)
     plr.sprite = arcade.Sprite("resources/ufo.png", plr.scale)
-    pp = pure_pursuit_projectile.PlayerProjectile(np.array([600,600],dtype="f"))
+    pp = pure_pursuit_projectile.PlayerProjectile(np.array([100,600],dtype="f"))
     pp.sprite = arcade.Sprite("resources/player.png", pp.scale)
     PlayerWindow(1500,1000,"pure",plr,pp)
     arcade.run()

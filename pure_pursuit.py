@@ -4,7 +4,7 @@ from matplotlib import pyplot as plt
 
 def find_goal_point(my_point,enemy_points):
     potential_points = {}
-    for i in range(len(my_point)):
+    for i in range(len(enemy_points)):
         potential_points[abs(np.sqrt((enemy_points[i][0] - my_point[0]) ** 2 +
                                      (enemy_points[i][1] - my_point[1]) ** 2))] = enemy_points[i]
 

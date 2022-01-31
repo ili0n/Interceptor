@@ -7,7 +7,7 @@ from SAT import Polygon
 
 
 class PlayerProjectile():
-    def __init__(self, inital_point, max_engine=100, mass=1500, A=20, Cd=0.5):
+    def __init__(self, inital_point, max_engine=30, mass=1500, A=20, Cd=0.5):
         self._scale = 0.05
         self._A = A
         self._acceleration = 12
@@ -63,7 +63,7 @@ class PlayerProjectile():
     def _update_points(self, distance):
         next_point = pure_pursuit.calculate_new_position(self._goal_point, self._point, distance)
         self._point = next_point
-        # print(self._point)
+        print(self._goal_point)
         for i in self._polygon.vertices:
             temp_x = i[0] - self._point[0]
             temp_y = i[1] - self._point[1]
