@@ -14,8 +14,8 @@ class Target:
         self._polygon = SAT.Polygon(np.array([
             [self._point[0] + 100 * self._scale, self._point[1] + 50 * self._scale],
             [self._point[0] + 100 * self._scale, self._point[1] - 50 * self._scale],
-            [self._point[0] - 100 * self._scale, self._point[1] + 50 * self._scale],
-            [self._point[0] - 100 * self._scale, self._point[1] - 50 * self._scale]], dtype="f"))
+            [self._point[0] - 100 * self._scale, self._point[1] - 50 * self._scale],
+            [self._point[0] - 100 * self._scale, self._point[1] + 50 * self._scale]], dtype="f"))
 
     @property
     def polygon(self):

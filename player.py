@@ -12,9 +12,9 @@ class Player:
         self._polygon = Polygon(np.array([
             [self._point[0], self._point[1] + 850 * self._scale],
             [self._point[0] + 250 * self._scale, self._point[1] + 250 * self._scale],
-            [self._point[0] - 250 * self._scale, self._point[1] + 250 * self._scale],
             [self._point[0] + 250 * self._scale, self._point[1] - 250 * self._scale],
-            [self._point[0] - 250 * self._scale, self._point[1] - 250 * self._scale]], dtype="f"))
+            [self._point[0] - 250 * self._scale, self._point[1] - 250 * self._scale],
+            [self._point[0] - 250 * self._scale, self._point[1] + 250 * self._scale]], dtype="f"))
         self._speed = speed
 
     def move(self,x_inc,y_inc):

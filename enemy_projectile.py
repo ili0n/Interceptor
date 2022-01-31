@@ -24,9 +24,9 @@ class EnemyProjectile(object):
         self._polygon = Polygon(np.array([
             [self._point[0], self._point[1] + 850 * self._scale],
             [self._point[0] + 200 * self._scale, self._point[1] + 820 * self._scale],
-            [self._point[0] - 200 * self._scale, self._point[1] + 820 * self._scale],
             [self._point[0] + 200 * self._scale, self._point[1] - 820 * self._scale],
-            [self._point[0] - 200 * self._scale, self._point[1] - 820 * self._scale]], dtype="f"))
+            [self._point[0] - 200 * self._scale, self._point[1] - 820 * self._scale],
+            [self._point[0] - 200 * self._scale, self._point[1] + 820 * self._scale]], dtype="f"))
         self._path = path
         self._Cd = Cd
         self._mass = mass

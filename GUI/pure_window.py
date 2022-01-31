@@ -2,23 +2,24 @@ import arcade
 import numpy as np
 
 import SAT
-import pathGenerator
-import enemy_projectile
 import player
+import pure_pursuit_projectile
 
 
 class PlayerWindow(arcade.Window):
 
-    def __init__(self, width, height, title, player):
+    def __init__(self, width, height, title, player,pure_projectile):
         super().__init__(width, height, title)
         self.set_location(200, 200)
         # self._enemy = enemy
         self._player = player
+        self._pure_projectile = pure_projectile
         # Loading the background image
         self.background = None
         self.sprites_list = arcade.SpriteList()
         # self.sprites_list.append(enemy.sprite)
         self.sprites_list.append(player.sprite)
+        self.sprites_list.append(pure_projectile.sprite)
         self.set_update_rate(1 / 60)
         self._counter = 0
         self._player_x_sign = 0
@@ -77,11 +78,18 @@ class PlayerWindow(arcade.Window):
 
         self._player.move(x_move, y_move)
         self._player.sprite.set_position(self._player.point[0],self._player.point[1])
+        self._pure_projectile.calculate_distance(delta_time,self._player)
+        self._pure_projectile.sprite.set_position(int(self._pure_projectile.point[0]),int(self._pure_projectile.point[1]))
+
+        if SAT.is_colliding(self._player.polygon,self._pure_projectile.polygon):
+            arcade.exit()
 
 if __name__ == "__main__":
     plr = player.Player(np.array([800, 800],dtype="f"),250)
     plr.sprite = arcade.Sprite("resources/ufo.png", plr.scale)
-    PlayerWindow(1500,1000,"pure",plr)
+    pp = pure_pursuit_projectile.PlayerProjectile(np.array([600,600],dtype="f"))
+    pp.sprite = arcade.Sprite("resources/player.png", pp.scale)
+    PlayerWindow(1500,1000,"pure",plr,pp)
     arcade.run()
 
 

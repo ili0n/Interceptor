@@ -7,7 +7,7 @@ from SAT import Polygon
 
 
 class PlayerProjectile():
-    def __init__(self, inital_point, max_engine=50, mass=1500, A=20, Cd=0.5):
+    def __init__(self, inital_point, max_engine=100, mass=1500, A=20, Cd=0.5):
         self._scale = 0.05
         self._A = A
         self._acceleration = 12
@@ -16,9 +16,9 @@ class PlayerProjectile():
         self._polygon = Polygon(np.array([
             [self._point[0], self._point[1] + 850 * self._scale],
             [self._point[0] + 200 * self._scale, self._point[1] + 820 * self._scale],
-            [self._point[0] - 200 * self._scale, self._point[1] + 820 * self._scale],
             [self._point[0] + 200 * self._scale, self._point[1] - 820 * self._scale],
-            [self._point[0] - 200 * self._scale, self._point[1] - 820 * self._scale]], dtype="f"))
+            [self._point[0] - 200 * self._scale, self._point[1] - 820 * self._scale],
+            [self._point[0] - 200 * self._scale, self._point[1] + 820 * self._scale]], dtype="f"))
         self._Cd = Cd
         self._mass = mass
         self._weight = scipy.constants.g * mass
@@ -37,18 +37,17 @@ class PlayerProjectile():
         D = self._Cd * ro * (self._velocity ** 2 * self._A) / 2
         return D
 
-    def _find_goal_point(self, enemy):
-        self._goal_point = pure_pursuit.find_goal_point(self._point, enemy.polygon.vertices)
-
     def calculate_force(self):
         self._angle1 = np.arctan((self._goal_point[1] - self._point[1]) / (self._goal_point[0] - self._point[0]))
+        self._angle2, self._previous_angle2 = self._angle1, self._angle2
         drag = self._calculate_drag()
         push_int = self._max_engine - drag
-        push = np.sqrt((push_int*np.sin(self._angle1)-self._weight)**2 +(push_int*np.cos(self._angle1))**2)
+        push = np.sqrt((push_int * np.sin(self._angle1) - self._weight) ** 2 + (push_int * np.cos(self._angle1)) ** 2)
 
         return push
 
-    def calculate_distance(self, t):
+    def calculate_distance(self, t, enemy):
+        self._goal_point = pure_pursuit.find_goal_point(self._point, enemy.polygon.vertices)
         F = self.calculate_force()
         dds = lambda *argv: F / self._mass
         tb = t + 1 / 60
@@ -62,13 +61,12 @@ class PlayerProjectile():
         return fx_rk4[-1]
 
     def _update_points(self, distance):
-        dist_arr = np.array([distance * np.cos(self._angle1), distance * np.sin(self._angle1)])
-        self._point += dist_arr.astype(int)
+        next_point = pure_pursuit.calculate_new_position(self._goal_point, self._point, distance)
+        self._point = next_point
+        # print(self._point)
         for i in self._polygon.vertices:
-            i += dist_arr
             temp_x = i[0] - self._point[0]
             temp_y = i[1] - self._point[1]
-
             # now apply rotatio
             angle_radians = self._angle2 - self._previous_angle2
             cos_angle = np.cos(angle_radians)
@@ -77,9 +75,10 @@ class PlayerProjectile():
             rotated_y = temp_x * sin_angle + temp_y * cos_angle
 
             # translate back
-            i[0] = rotated_x + self._point[0]
-            i[1] = rotated_y + self._point[1]
-        print(self._polygon.vertices)
+            i[0] = rotated_x + next_point[0]
+            i[1] = rotated_y + next_point[1]
+        # print(self._polygon.vertices)
+        self._point = next_point
 
     @property
     def sprite(self):
@@ -108,3 +107,7 @@ class PlayerProjectile():
     @property
     def polygon(self):
         return self._polygon
+
+    @property
+    def scale(self):
+        return self._scale
