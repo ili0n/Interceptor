@@ -7,7 +7,7 @@ from SAT import Polygon
 
 
 class PlayerProjectile():
-    def __init__(self, inital_point, max_engine=30, mass=1500, A=20, Cd=0.5):
+    def __init__(self, inital_point, max_engine=20, mass=1500, A=20, Cd=0.5):
         self._scale = 0.05
         self._A = A
         self._acceleration = 12
@@ -22,9 +22,8 @@ class PlayerProjectile():
         self._Cd = Cd
         self._mass = mass
         self._weight = scipy.constants.g * mass
-        self._angle1 = 0
-        self._angle2 = 2.2
-        self._previous_angle2 = 0
+        self._angle = 0
+        self._previous_angle = 0
         self._s = 0
         self._max_engine = max_engine
         self._goal_point = None
@@ -38,16 +37,15 @@ class PlayerProjectile():
         return D
 
     def calculate_force(self):
-        self._angle1 = np.arctan((self._goal_point[1] - self._point[1]) / (self._goal_point[0] - self._point[0]))
-        self._angle2, self._previous_angle2 = self._angle1, self._angle2
+        self._previous_angle, self._angle = self._angle, pure_pursuit.calculate_angle(self._goal_point, self._point)
         drag = self._calculate_drag()
         push_int = self._max_engine - drag
-        push = np.sqrt((push_int * np.sin(self._angle1) - self._weight) ** 2 + (push_int * np.cos(self._angle1)) ** 2)
+        push = np.sqrt((push_int * np.sin(self._angle) - self._weight) ** 2 + (push_int * np.cos(self._angle)) ** 2)
 
         return push
 
     def calculate_distance(self, t, enemy):
-        self._goal_point = pure_pursuit.find_goal_point(self._point, enemy.polygon.vertices)
+        # self._goal_point = pure_pursuit.find_goal_point(self._point, enemy.polygon.vertices)
         F = self.calculate_force()
         dds = lambda *argv: F / self._mass
         tb = t + 1 / 60
@@ -61,14 +59,18 @@ class PlayerProjectile():
         return fx_rk4[-1]
 
     def _update_points(self, distance):
-        next_point = pure_pursuit.calculate_new_position(self._goal_point, self._point, distance)
-        self._point = next_point
-        print(self._goal_point)
+
+        # self._point = next_point
+        # print(self._goal_point)
+        next_point = np.array([
+            np.cos(self._angle)*distance + self._point[0],
+            np.sin(self._angle) * distance + self._point[1]
+        ])
         for i in self._polygon.vertices:
             temp_x = i[0] - self._point[0]
             temp_y = i[1] - self._point[1]
             # now apply rotatio
-            angle_radians = self._angle2 - self._previous_angle2
+            angle_radians = self._angle - self._previous_angle
             cos_angle = np.cos(angle_radians)
             sin_angle = np.sin(angle_radians)
             rotated_x = temp_x * cos_angle - temp_y * sin_angle
@@ -88,17 +90,17 @@ class PlayerProjectile():
     def sprite(self, sprite):
         self._sprite = sprite
 
-    @property
-    def angle1(self):
-        return self._angle1
+    # @property
+    # def angle1(self):
+    #     return self._angle1
 
     @property
-    def angle2(self):
-        return self._angle2
+    def angle(self):
+        return self._angle
 
     @property
-    def previous_angle2(self):
-        return self._previous_angle2
+    def previous_angle(self):
+        return self._previous_angle
 
     @property
     def point(self):
@@ -111,3 +113,11 @@ class PlayerProjectile():
     @property
     def scale(self):
         return self._scale
+
+    @property
+    def goal_point(self):
+        return  self._goal_point
+
+    @goal_point.setter
+    def goal_point(self,goal):
+        self._goal_point = goal

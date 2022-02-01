@@ -3,12 +3,13 @@ import numpy as np
 
 import SAT
 import player
+import pure_pursuit
 import pure_pursuit_projectile
 
 
 class PlayerWindow(arcade.Window):
 
-    def __init__(self, width, height, title, player,pure_projectile):
+    def __init__(self, width, height, title, player, pure_projectile):
         super().__init__(width, height, title)
         self.set_location(200, 200)
         # self._enemy = enemy
@@ -28,6 +29,8 @@ class PlayerWindow(arcade.Window):
         self._right = False
         self._up = False
         self._down = False
+        self._pure_projectile.goal_point = self._player.point
+        self._pure_projectile.goal_point = pure_pursuit.find_goal_point(self._pure_projectile.point,self._player.polygon.vertices)
 
     # Creating on_draw() function to draw on the screen
     def on_draw(self):
@@ -77,19 +80,23 @@ class PlayerWindow(arcade.Window):
         y_move = self._player.speed * self._player_y_sign * delta_time
 
         self._player.move(x_move, y_move)
-        self._player.sprite.set_position(self._player.point[0],self._player.point[1])
-        self._pure_projectile.calculate_distance(delta_time,self._player)
-        self._pure_projectile.sprite.set_position(int(self._pure_projectile.point[0]),int(self._pure_projectile.point[1]))
+        self._player.sprite.set_position(self._player.point[0], self._player.point[1])
 
-        if SAT.is_colliding(self._player.polygon,self._pure_projectile.polygon):
+        self._pure_projectile.calculate_distance(delta_time, self._player)
+        self._pure_projectile.sprite.set_position(int(self._pure_projectile.point[0]),
+                                                  int(self._pure_projectile.point[1]))
+        self._pure_projectile.sprite.turn_right((180 / np.pi) * abs((self._pure_projectile.angle
+                                                                     - self._pure_projectile.previous_angle)))
+        print(self._pure_projectile.point)
+
+        if SAT.is_colliding(self._player.polygon, self._pure_projectile.polygon):
             arcade.exit()
 
+
 if __name__ == "__main__":
-    plr = player.Player(np.array([800, 800],dtype="f"),250)
+    plr = player.Player(np.array([800, 800], dtype="f"), 250)
     plr.sprite = arcade.Sprite("resources/ufo.png", plr.scale)
-    pp = pure_pursuit_projectile.PlayerProjectile(np.array([100,600],dtype="f"))
+    pp = pure_pursuit_projectile.PlayerProjectile(np.array([100, 100], dtype="f"))
     pp.sprite = arcade.Sprite("resources/player.png", pp.scale)
-    PlayerWindow(1500,1000,"pure",plr,pp)
+    PlayerWindow(1500, 1000, "pure", plr, pp)
     arcade.run()
-
-
