@@ -39,8 +39,10 @@ def calculate_angle(goal_point, current_point):
     #     center_point = np.array([leveled_current_point[0] - r, 0])
     # else:
     #     center_point = np.array([leveled_current_point[0] + r, 0])
-
     angle = np.arctan(np.sqrt(l_squared) / r)
+    if current_point[0] - goal_point[0] > 0:
+        angle -= np.pi
+        angle *= -1
 
     # distance_current = np.sqrt(r ** 2 + r ** 2 - 2 * r * r * np.cos(angle))
     #
