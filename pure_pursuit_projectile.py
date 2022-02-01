@@ -18,7 +18,7 @@ class PlayerProjectile():
             [self._point[0] + 200 * self._scale, self._point[1] + 820 * self._scale],
             [self._point[0] + 200 * self._scale, self._point[1] - 820 * self._scale],
             [self._point[0] - 200 * self._scale, self._point[1] - 820 * self._scale],
-            [self._point[0] - 200 * self._scale, self._point[1] + 820 * self._scale]], dtype="f"))
+            [self._point[0] - 200 * self._scale, self._point[1] + 820 * self._scale]], dtype="i"))
         self._Cd = Cd
         self._mass = mass
         self._weight = scipy.constants.g * mass

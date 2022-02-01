@@ -10,17 +10,17 @@ class Player:
         self.angle = np.pi / 4
         self._sprite = None
         self._polygon = Polygon(np.array([
-            [self._point[0], self._point[1] + 850 * self._scale],
+            [self._point[0], self._point[1] + 250 * self._scale],
             [self._point[0] + 250 * self._scale, self._point[1] + 250 * self._scale],
             [self._point[0] + 250 * self._scale, self._point[1] - 250 * self._scale],
             [self._point[0] - 250 * self._scale, self._point[1] - 250 * self._scale],
-            [self._point[0] - 250 * self._scale, self._point[1] + 250 * self._scale]], dtype="f"))
+            [self._point[0] - 250 * self._scale, self._point[1] + 250 * self._scale]], dtype="i"))
         self._speed = speed
 
     def move(self,x_inc,y_inc):
         x_inc= int(x_inc)
         y_inc = int(y_inc)
-        inc = np.array([x_inc,y_inc],dtype="f")
+        inc = np.array([x_inc,y_inc],dtype="i")
 
         self._point+= inc
 

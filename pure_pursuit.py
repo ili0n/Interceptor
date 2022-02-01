@@ -3,10 +3,36 @@ from matplotlib import pyplot as plt
 
 
 def find_goal_point(my_point, enemy_points, look_ahead=0):
+    min_x =1500
+    max_x = 0
+    min_y = 1500
+    max_y = 0
+
+    for i in enemy_points:
+        if i[0] > max_x:
+            max_x = i[0]
+        if i[0] < min_x:
+            min_x = i[0]
+        if i[1] > max_y:
+            max_y = i[1]
+        if i[1] < min_y:
+            min_y = i[1]
+
+    generated_points = []
+
+    for i in range(min_x,max_x):
+        generated_points.append(np.array([i,min_y]))
+        generated_points.append(np.array([i, max_y]))
+
+    for i in range(min_y,max_y):
+        generated_points.append(np.array([min_x,i]))
+        generated_points.append(np.array([max_x, i]))
+
     potential_points = {}
-    for i in range(len(enemy_points)):
-        potential_points[abs(np.sqrt((enemy_points[i][0] - my_point[0]) ** 2 +
-                                     (enemy_points[i][1] - my_point[1]) ** 2) - look_ahead)] = enemy_points[i]
+
+    for i in generated_points:
+        potential_points[abs(np.sqrt((i[0] - my_point[0]) ** 2 +
+                                     (i[1] - my_point[1]) ** 2) - look_ahead)] = i
 
     value = potential_points[min(potential_points.keys())]
     return value
@@ -16,21 +42,26 @@ def calculate_angle(goal_point, current_point):
     leveled_current_point = np.array([current_point[0], 0])
     leveled_goal_point = np.array([goal_point[0], goal_point[1] - current_point[1]])
 
-    if leveled_goal_point[1] == 0:
+    if leveled_goal_point[1] == 0.0:
         # if leveled_goal_point[0] >= leveled_current_point[0]:
         #     new_x = np.array(current_point[0] + distance)
         # else:
         #     new_x = np.array(current_point[0] - distance)
+        if current_point[0] - goal_point[0] > 0:
+            return 3 * np.pi / 2
+        else:
+            return np.pi / 2
 
-        return 0
 
     if leveled_goal_point[0] == leveled_current_point[0]:
         # if leveled_goal_point[1] > 0:
         #     new_y = np.array(current_point[1] + distance)
         # else:
         #     new_y = np.array(current_point[1] - distance)
-
-        return np.pi / 2
+        if current_point[0] - goal_point[0] > 0:
+            return np.pi
+        else:
+            return 0
 
     l_squared = (goal_point[0] - current_point[0]) ** 2 + (goal_point[1] - current_point[1]) ** 2
     r = l_squared / (2 * leveled_goal_point[1])
@@ -62,7 +93,7 @@ def calculate_angle(goal_point, current_point):
     #     new_y = -np.sqrt(distance_current ** 2 - (new_x - leveled_current_point[0]) ** 2) + current_point[1]
     # else:
     #     new_y = np.sqrt(distance_current ** 2 - (new_x - leveled_current_point[0]) ** 2) + current_point[1]
-    print(angle)
+    # print(angle)
     return angle
 
 

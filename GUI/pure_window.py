@@ -87,16 +87,17 @@ class PlayerWindow(arcade.Window):
                                                   int(self._pure_projectile.point[1]))
         self._pure_projectile.sprite.turn_right((180 / np.pi) * abs((self._pure_projectile.angle
                                                                      - self._pure_projectile.previous_angle)))
-        print(self._pure_projectile.point)
+
+        print((180 / np.pi) * abs((self._pure_projectile.angle - self._pure_projectile.previous_angle)))
 
         if SAT.is_colliding(self._player.polygon, self._pure_projectile.polygon):
             arcade.exit()
 
 
 if __name__ == "__main__":
-    plr = player.Player(np.array([800, 800], dtype="f"), 250)
+    plr = player.Player(np.array([800, 800], dtype="i"), 250)
     plr.sprite = arcade.Sprite("resources/ufo.png", plr.scale)
-    pp = pure_pursuit_projectile.PlayerProjectile(np.array([1400, 100], dtype="f"))
+    pp = pure_pursuit_projectile.PlayerProjectile(np.array([1000, 100], dtype="i"))
     pp.sprite = arcade.Sprite("resources/player.png", pp.scale)
     PlayerWindow(1500, 1000, "pure", plr, pp)
     arcade.run()
