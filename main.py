@@ -1,11 +1,16 @@
+from time import sleep
+
 import arcade
 
-import GUI.lead_window
 
 # Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    pure = GUI.pure_window.PureWindow(1000,1000,"pure")
+from GUI import main_input_window
+from GUI import pure_input_window
 
+
+if __name__ == '__main__':
+    main_input_window.MainInputWindow()
+    # pure_input_window.PureInputWindow()
     arcade.run()
 
 
