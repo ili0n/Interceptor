@@ -7,7 +7,7 @@ import arcade.gui
 
 # --- Method 1 for handling click events,
 # Create a child class.
-from GUI import pure_input_window
+from GUI import pure_input_view
 
 
 class QuitButton(arcade.gui.UIFlatButton):
@@ -17,12 +17,14 @@ class QuitButton(arcade.gui.UIFlatButton):
 
 class PureButton(arcade.gui.UIFlatButton):
     def on_click(self, event: arcade.gui.UIOnClickEvent):
-        arcade.exit()
+        # arcade.exit()
         # arcade.set_window(pure_input_window.PureInputWindow())
         # arcade.close_window()
         # pure_input_window.PureInputWindow()
         # arcade.close_window()
-        arcade.set_window(pure_input_window.PureInputWindow())
+        arcade.get_window().clear()
+        pure_view = pure_input_view.PureInputView()
+        arcade.get_window().show_view(pure_view)
 
 
 class LeadButton(arcade.gui.UIFlatButton):
@@ -30,10 +32,9 @@ class LeadButton(arcade.gui.UIFlatButton):
         pass
     # TODO pure run
 
-
-class MainInputWindow(arcade.Window):
+class MainInputView(arcade.View):
     def __init__(self):
-        super().__init__(800, 600, "UIFlatButton Example", resizable=True)
+        super().__init__()
 
         # --- Required for all code that uses UI element,
         # a UIManager to handle the UI.
@@ -47,7 +48,7 @@ class MainInputWindow(arcade.Window):
         self.v_box = arcade.gui.UIBoxLayout()
 
         # Again, method 1. Use a child class to handle events.
-        pure_button = PureButton(text="Pure pursuit (heatseaking)", width=200).with_space_around(bottom=20)
+        pure_button = PureButton(text="Pure pursuit (heatseeking)", width=200).with_space_around(bottom=20)
         self.v_box.add(pure_button)
 
         lead_button = LeadButton(text="Lead collision (interceptor)", width=200).with_space_around(bottom=20)
@@ -66,5 +67,17 @@ class MainInputWindow(arcade.Window):
         )
 
     def on_draw(self):
-        self.clear()
+        arcade.start_render()
         self.manager.draw()
+
+
+
+class MainInputWindow(arcade.Window):
+    def __init__(self):
+        super().__init__(800, 600, "UIFlatButton Example", resizable=True)
+        main_view = MainInputView()
+        self.show_view(main_view)
+
+
+
+

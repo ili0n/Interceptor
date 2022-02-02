@@ -7,9 +7,9 @@ class RunButton(arcade.gui.UIFlatButton):
         print("run")
 
 
-class PureInputWindow(arcade.Window):
+class PureInputView(arcade.View):
     def __init__(self):
-        super().__init__(800, 600, "UIFlatButton Example", resizable=True)
+        super().__init__()
 
         # --- Required for all code that uses UI element,
         # a UIManager to handle the UI.
@@ -18,6 +18,7 @@ class PureInputWindow(arcade.Window):
 
         # Set background color
         arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
+        arcade.set_viewport(0, 800 - 1, 0, 600 - 1)
 
         # Create a vertical BoxGroup to align buttons
         self.v_box = arcade.gui.UIBoxLayout()
@@ -37,5 +38,4 @@ class PureInputWindow(arcade.Window):
         )
 
     def on_draw(self):
-        self.clear()
         self.manager.draw()
