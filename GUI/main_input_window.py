@@ -12,6 +12,7 @@ from GUI import pure_input_view
 
 class QuitButton(arcade.gui.UIFlatButton):
     def on_click(self, event: arcade.gui.UIOnClickEvent):
+        print("quit")
         arcade.exit()
 
 
@@ -22,7 +23,7 @@ class PureButton(arcade.gui.UIFlatButton):
         # arcade.close_window()
         # pure_input_window.PureInputWindow()
         # arcade.close_window()
-        arcade.get_window().clear()
+        arcade.get_window().current_view.manager.disable()
         pure_view = pure_input_view.PureInputView()
         arcade.get_window().show_view(pure_view)
 
@@ -32,9 +33,11 @@ class LeadButton(arcade.gui.UIFlatButton):
         pass
     # TODO pure run
 
+
 class MainInputView(arcade.View):
     def __init__(self):
         super().__init__()
+
 
         # --- Required for all code that uses UI element,
         # a UIManager to handle the UI.
@@ -57,7 +60,6 @@ class MainInputView(arcade.View):
         quit_button = QuitButton(text="Quit", width=200).with_space_around(bottom=20)
         self.v_box.add(quit_button)
 
-
         # Create a widget to hold the v_box widget, that will center the buttons
         self.manager.add(
             arcade.gui.UIAnchorWidget(
@@ -71,13 +73,9 @@ class MainInputView(arcade.View):
         self.manager.draw()
 
 
-
 class MainInputWindow(arcade.Window):
     def __init__(self):
         super().__init__(800, 600, "UIFlatButton Example", resizable=True)
         main_view = MainInputView()
         self.show_view(main_view)
-
-
-
-
+        self.set_update_rate(1 / 60)

@@ -7,11 +7,10 @@ import pure_pursuit
 import pure_pursuit_projectile
 
 
-class PlayerWindow(arcade.Window):
+class PlayerWindow(arcade.View):
 
-    def __init__(self, width, height, title, player, pure_projectile):
-        super().__init__(width, height, title)
-        self.set_location(200, 200)
+    def __init__(self, player, pure_projectile):
+        super().__init__()
         # self._enemy = enemy
         self._player = player
         self._pure_projectile = pure_projectile
@@ -21,7 +20,7 @@ class PlayerWindow(arcade.Window):
         # self.sprites_list.append(enemy.sprite)
         self.sprites_list.append(player.sprite)
         self.sprites_list.append(pure_projectile.sprite)
-        self.set_update_rate(1 / 60)
+
         self._counter = 0
         self._player_x_sign = 0
         self._player_y_sign = 0
@@ -30,15 +29,17 @@ class PlayerWindow(arcade.Window):
         self._up = False
         self._down = False
         self._pure_projectile.goal_point = self._player.point
-        self._pure_projectile.goal_point = pure_pursuit.find_goal_point(self._pure_projectile.point,self._player.polygon.vertices)
+        self._pure_projectile.goal_point = pure_pursuit.find_goal_point(self._pure_projectile.point,
+                                                                        self._player.polygon.vertices)
 
     # Creating on_draw() function to draw on the screen
     def on_draw(self):
         arcade.start_render()
 
         # Drawing the background image
-        arcade.draw_texture_rectangle(self.width // 2, self.height // 2, self.width,
-                                      self.height, arcade.load_texture("resources/suma.png"))
+        arcade.draw_texture_rectangle(arcade.get_window().width // 2, arcade.get_window().height // 2,
+                                      arcade.get_window().width, arcade.get_window().height,
+                                      arcade.load_texture("resources/suma.png"))
         self.sprites_list.draw()
 
     def on_key_press(self, symbol, modifiers: int):
@@ -94,10 +95,10 @@ class PlayerWindow(arcade.Window):
             arcade.exit()
 
 
-if __name__ == "__main__":
-    plr = player.Player(np.array([800, 800], dtype="i"), 250)
+def pure_handler(player_x, player_y, player_speed, projectile_x,projectile_y):
+    plr = player.Player(np.array([player_x, player_y], dtype="i"), player_speed)
     plr.sprite = arcade.Sprite("resources/ufo.png", plr.scale)
-    pp = pure_pursuit_projectile.PlayerProjectile(np.array([1000, 100], dtype="i"))
+    pp = pure_pursuit_projectile.PlayerProjectile(np.array([projectile_x, projectile_y], dtype="i"))
     pp.sprite = arcade.Sprite("resources/player.png", pp.scale)
-    PlayerWindow(1500, 1000, "pure", plr, pp)
+    PlayerWindow(plr, pp)
     arcade.run()
