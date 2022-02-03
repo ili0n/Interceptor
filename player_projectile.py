@@ -37,8 +37,8 @@ class PlayerProjectile():
 
     def calculate_path_force(self, enemy):
         drag = self._calculate_drag()
-        drag_x = drag * np.cos(self._angle1)
-        drag_y = drag * np.sin(self._angle1)
+        # drag_x = drag * np.cos(self._angle1)
+        # drag_y = drag * np.sin(self._angle1)
 
         # we have length of vector for enemy direction
         norm, _ = enemy.calculate_path_force()
@@ -49,8 +49,15 @@ class PlayerProjectile():
         vector_of_prediction = np.array([norm, 0])
         vector_of_prediction = np.dot(rot, vector_of_prediction)
 
+        F = self._max_engine - drag
+        angle = np.angle(vector_of_prediction)
+
+        norm = np.sqrt(
+            (F*np.sin(angle) - self._weight)**2 + (F*np.cos(angle))**2
+        )
+
         # we have length of friendly vector
-        norm = 100
+        # norm = 100
         # we have angle of friendly vector
         theta = np.deg2rad(self.angle1)
         rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])

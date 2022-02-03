@@ -51,7 +51,8 @@ class LeadWindow(arcade.Window):
         self.sprites_list.update()
         if SAT.is_colliding(self._enemy.polygon, self._target.polygon) or SAT.is_colliding(self._enemy.polygon,
                                                                                            self._friendly.polygon):
-            arcade.finish_render()
+            arcade.pause(5)
+            arcade.exit()
 
 
 if __name__ == '__main__':
