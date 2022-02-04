@@ -1,6 +1,6 @@
 import arcade
 import arcade.gui
-# import lead_window
+import GUI.lead_window as lead_window
 import pathGenerator
 import numpy as np
 import enemy_projectile
@@ -55,20 +55,22 @@ class LeadInputView(arcade.View):
         # arcade.set_background_color(arcade.color.DARK_BLUE_GRAY)
         arcade.set_viewport(0, 800 - 1, 0, 600 - 1)
 
-        # adding labels
         self.rows = arcade.gui.UIBoxLayout()
 
-        self.start_box, self.position_start_label, self.start_input_x, self.start_input_y = generate_xy_input("Start position: ", "X for start", "Y for start")
-        self.rows.add(self.start_box)
+        self.enemy_start_box, self.enemy_position_start_label, self.enemy_start_input_x, self.enemy_start_input_y = generate_xy_input(
+            "Enemy start position: ", "X for start", "Y for start")
+        self.rows.add(self.enemy_start_box)
 
 
         # inputs for middle dot
-        self.middle_box, self.position_middle_label, self.middle_input_x, self.middle_input_y = generate_xy_input("Middle position", "X for middle", "Y for middle")
-        self.rows.add(self.middle_box)
+        self.friendly_start_box, self.friendly_start_label, self.friendly_start_input_x, self.friendly_start_input_y = generate_xy_input(
+            "Friendly start position", "X for start", "Y for start")
+        self.rows.add(self.friendly_start_box)
 
         # inputs for end dot
-        self.end_box, self.position_end_label, self.end_input_x, self.end_input_y = generate_xy_input("End position: ", "X for end", "Y for end")
-        self.rows.add(self.end_box)
+        self.target_box, self.target_label, self.target_input_x, self.target_input_y = generate_xy_input(
+            "Target position: ", "X for position", "Y for position")
+        self.rows.add(self.target_box)
         # buttons
 
         self.buttons = arcade.gui.UIBoxLayout(vertical=False)
@@ -79,25 +81,26 @@ class LeadInputView(arcade.View):
         @submit_btn.event("on_click")
         def on_click_submit_btn(event):
             print("Submited successfully")
-            print("Start: ({0}, {1})".format(self.start_input_x.text, self.start_input_y.text))
-            print("Middle: ({0}, {1})".format(self.middle_input_x.text, self.middle_input_y.text))
-            print("End: ({0}, {1})".format(self.end_input_x.text, self.end_input_y.text))
-            # arcade.get_window().current_view.manager.disable()
-            # arcade.get_window().clear()
-            # pg = pathGenerator.PathGenerator()
-            # path = pg.generate_enemy_path(np.array([500, 800]))
-            #
-            # enemy = enemy_projectile.EnemyProjectile(path)
-            # enemy.sprite = arcade.sprite.Sprite("resources/enemy.png", 0.05)
-            #
-            # trgt = target.Target(pg.enemy_target)
-            # trgt.sprite = arcade.sprite.Sprite("resources/lab.png", trgt.scale)
-            #
-            # friendly = player_projectile.PlayerProjectile(pg.enemy_target + np.array([300, 300]))
-            # friendly.sprite = arcade.sprite.Sprite("resources/player.png", 0.05)
-            # # TODO
-            # lead_view = lead_window.LeadView(1500, 1000, "Lead", enemy, trgt, friendly)
-            # arcade.get_window().show_view(lead_view)
+            print("Start: ({0}, {1})".format(self.enemy_start_input_x.text, self.enemy_start_input_y.text))
+            print("Middle: ({0}, {1})".format(self.friendly_start_input_x.text, self.friendly_start_input_y.text))
+            print("End: ({0}, {1})".format(self.target_input_x.text, self.target_input_y.text))
+            enemy_start = np.array([int(self.enemy_start_input_x.text), int(self.enemy_start_input_y.text)])
+            friendly_start = np.array([int(self.friendly_start_input_x.text), int(self.friendly_start_input_y.text)])
+            target_position = np.array([int(self.target_input_x.text), int(self.target_input_y.text)])
+            arcade.get_window().current_view.manager.disable()
+            arcade.get_window().clear()
+            pg = pathGenerator.PathGenerator(enemy_start, target_position, friendly_start)
+            path = pg.generate_enemy_path(np.array([500, 800]))
+
+            enemy = enemy_projectile.EnemyProjectile(path)
+            enemy.sprite = arcade.sprite.Sprite("GUI/resources//enemy.png", 0.05)
+
+            trgt = target.Target(pg.enemy_target)
+            trgt.sprite = arcade.sprite.Sprite("GUI/resources/lab.png", trgt.scale)
+
+            friendly = player_projectile.PlayerProjectile(friendly_start)
+            friendly.sprite = arcade.sprite.Sprite("GUI/resources//player.png", 0.05)
+            lead_window.LeadWindow(1500, 1000, "Lead", enemy, trgt, friendly)
 
         self.submit_btn = submit_btn
         self.buttons.add(self.submit_btn.with_space_around(30, 30, 30, 30))
@@ -106,12 +109,12 @@ class LeadInputView(arcade.View):
         reset_btn = arcade.gui.UIFlatButton(text="Reset", width=200)
         @reset_btn.event("on_click")
         def on_click_reset_btn(event):
-            self.start_input_x.text = ""
-            self.start_input_y.text = ""
-            self.middle_input_x.text = ""
-            self.middle_input_y.text = ""
-            self.end_input_x.text = ""
-            self.end_input_y.text = ""
+            self.enemy_start_input_x.text = ""
+            self.enemy_start_input_y.text = ""
+            self.friendly_start_input_x.text = ""
+            self.friendly_start_input_y.text = ""
+            self.target_input_x.text = ""
+            self.target_input_y.text = ""
             print("Reset called")
         self.reset_btn = reset_btn
         self.buttons.add(self.reset_btn)

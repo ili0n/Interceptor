@@ -8,7 +8,7 @@ import player_projectile
 import target
 
 
-class LeadView(arcade.Window):
+class LeadWindow(arcade.Window):
 
     def __init__(self, width, height, title, enemy, target, friendly):
         super().__init__(width, height, title)
@@ -33,7 +33,7 @@ class LeadView(arcade.Window):
 
         # Drawing the background image
         arcade.draw_texture_rectangle(self.width // 2, self.height // 2, self.width,
-                                      self.height, arcade.load_texture("resources/suma.png"))
+                                      self.height, arcade.load_texture("GUI/resources/suma.png"))
         self.sprites_list.draw()
 
     def on_update(self, delta_time: float):
@@ -68,6 +68,6 @@ if __name__ == '__main__':
     friendly = player_projectile.PlayerProjectile(pg.enemy_target + np.array([300, 300]))
     friendly.sprite = arcade.sprite.Sprite("resources/player.png", 0.05)
 
-    LeadView(1500, 1000, "Lead", enemy, trgt, friendly)
+    # LeadView(1500, 1000, "Lead", enemy, trgt, friendly)
 
     arcade.run()

@@ -9,10 +9,19 @@ class PathGenerator:
     _enemy_path_order = None
     _file_path = None
 
-    def __init__(self):
-        self._enemy_start = np.array([0, 0])
-        self._enemy_target = np.array([1000, 0])
-        self._my_start = np.array([500, 1000])
+    def __init__(self, enemy_start=None, enemy_target=None, my_start=None):
+        if enemy_start is None:
+            self._enemy_start = np.array([0, 0])
+        else:
+            self._enemy_start = enemy_start
+        if enemy_target is None:
+            self._enemy_target = np.array([1000, 0])
+        else:
+            self._enemy_target = enemy_target
+        if my_start is None:
+            self._my_start = np.array([500, 1000])
+        else:
+            self._my_start = my_start
         self._enemy_path_order = 2
         # order = 2 is natural due to curvature of Earth, and taking shortest possible path, and gravity being weaker away from surface
 
