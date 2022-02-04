@@ -11,7 +11,7 @@ class PlayerProjectile():
         self._scale = 0.05
         self._A = A
         self._acceleration = 12
-        self._velocity = 17
+        self._velocity = 7
         self._point = inital_point
         self._polygon = Polygon(np.array([
             [self._point[0], self._point[1] + 850 * self._scale],

@@ -1,5 +1,9 @@
 import arcade
 import arcade.gui
+import player
+import pure_pursuit_projectile
+import GUI.pure_window as pure_window
+import numpy as np
 
 
 class RunButton(arcade.gui.UIFlatButton):
@@ -87,26 +91,22 @@ class PureInputView(arcade.View):
         @submit_btn.event("on_click")
         def on_click_submit_btn(event):
             print("Submited successfully")
-            print("Start: ({0}, {1})".format(self.ship_start_input_x.text, self.ship_start_input_y.text))
-            print("End: ({0}, {1})".format(self.projectile_start_input_x.text, self.projectile_start_input_y.text))
+            print("Ship start: ({0}, {1})".format(self.ship_start_input_x.text, self.ship_start_input_y.text))
+            print("Projectile start: ({0}, {1})".format(self.projectile_start_input_x.text, self.projectile_start_input_y.text))
             print("Velocity: {0}".format(self.velocity_input.text))
             print("Look ahead distance: {0}".format(self.look_ahead_input.text))
-            # arcade.get_window().current_view.manager.disable()
-            # arcade.get_window().clear()
-            # pg = pathGenerator.PathGenerator()
-            # path = pg.generate_enemy_path(np.array([500, 800]))
-            #
-            # enemy = enemy_projectile.EnemyProjectile(path)
-            # enemy.sprite = arcade.sprite.Sprite("resources/enemy.png", 0.05)
-            #
-            # trgt = target.Target(pg.enemy_target)
-            # trgt.sprite = arcade.sprite.Sprite("resources/lab.png", trgt.scale)
-            #
-            # friendly = player_projectile.PlayerProjectile(pg.enemy_target + np.array([300, 300]))
-            # friendly.sprite = arcade.sprite.Sprite("resources/player.png", 0.05)
-            # # TODO
-            # lead_view = lead_window.LeadView(1500, 1000, "Lead", enemy, trgt, friendly)
-            # arcade.get_window().show_view(lead_view)
+            arcade.get_window().current_view.manager.disable()
+            arcade.get_window().clear()
+            projectile_start = np.array([int(self.projectile_start_input_x.text), int(self.projectile_start_input_y.text)])
+            ship_start = np.array([int(self.ship_start_input_x.text), int(self.ship_start_input_y.text)])
+
+
+            plr = player.Player(ship_start, int(self.velocity_input.text))
+            plr.sprite = arcade.Sprite("GUI/resources/ufo.png", plr.scale)
+            pp = pure_pursuit_projectile.PlayerProjectile(projectile_start)
+            pp.sprite = arcade.Sprite("GUI/resources/player.png", pp.scale)
+            pure_window.PlayerWindow(1500, 1000, "pure", plr, pp)
+            arcade.run()
 
         self.submit_btn = submit_btn
         self.buttons.add(self.submit_btn.with_space_around(30, 30, 30, 30))

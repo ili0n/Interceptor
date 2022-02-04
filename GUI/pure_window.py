@@ -38,7 +38,7 @@ class PlayerWindow(arcade.Window):
 
         # Drawing the background image
         arcade.draw_texture_rectangle(self.width // 2, self.height // 2, self.width,
-                                      self.height, arcade.load_texture("resources/suma.png"))
+                                      self.height, arcade.load_texture("GUI/resources/suma.png"))
         self.sprites_list.draw()
 
     def on_key_press(self, symbol, modifiers: int):
