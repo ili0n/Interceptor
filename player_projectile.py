@@ -1,12 +1,13 @@
+import matplotlib.patches
 import numpy as np
 import scipy.constants
 import lead_collision
 import nans_lib
 from SAT import Polygon
-
+import matplotlib.pyplot as plt
 
 class PlayerProjectile():
-    def __init__(self, inital_point, max_engine=10000, mass=500, A=20, Cd=0.5):
+    def __init__(self, inital_point, max_engine=1000, mass=500, A=20, Cd=0.5):
         self._scale = 0.05
         self._A = A
         self._acceleration = 12
@@ -21,10 +22,10 @@ class PlayerProjectile():
         self._Cd = Cd
         self._mass = mass
         self._weight = scipy.constants.g * mass
-        self._angle1 = 0
-        self._previous_angle1 = 0
-        self._angle2 = 2.2
-        self._previous_angle2 = 0
+        self._angle1 = 0.5 * np.pi
+        self._previous_angle1 = 0.5 * np.pi
+        self._angle2 = 0.5 * np.pi
+        self._previous_angle2 = 0.5 * np.pi
         self._s = 0
         self._max_engine = max_engine
 
@@ -68,7 +69,7 @@ class PlayerProjectile():
 
         direction, length = lead_collision.lead_collision(vector_of_movements, self._point, vector_of_prediction,
                                                           enemy.point)
-        if length < norm:
+        if length < norm and length != 0:
             engine_power = length
         else:
             engine_power = norm
@@ -78,15 +79,17 @@ class PlayerProjectile():
         cos = np.dot(push, i) / np.linalg.norm(push) / np.linalg.norm(i)
         self._previous_angle1 = self._angle1
         self._angle1 = np.arccos(cos)
-        if direction[1] < 0:
+        # diskutabilno
+        if direction[0] < 0:
             self._angle1 *= -1
 
         # new angle points to enemy rocket
-        self._previous_angle2 = self._angle2
-        between = self.point - enemy.point
+        between = - self.point + enemy.point
         i = np.array([1, 0])
         cos = np.dot(between, i) / np.linalg.norm(between) / np.linalg.norm(i)
-        self._angle2 = np.arccos(cos)
+        self._previous_angle2, self._angle2 = self.angle2, np.arccos(cos)
+        if between[0] < 0:
+            self._angle2 *= -1
         return F
 
     def calculate_distance(self, t, enemy):
@@ -103,27 +106,15 @@ class PlayerProjectile():
         return fx_rk4[-1]
 
     def _update_points(self, distance):
-        # self._point = next_point
-        # print(self._goal_point)
-        next_point = np.array([
-            np.cos(self._angle1) * distance + self._point[0],
-            np.sin(self._angle1) * distance + self._point[1]
+        translation = np.array([
+            np.cos(self._angle1) * distance,
+            np.sin(self._angle1) * distance
         ])
-        for i in self._polygon.vertices:
-            temp_x = i[0] - self._point[0]
-            temp_y = i[1] - self._point[1]
-            # now apply rotatio
-            angle_radians = self._angle1 - self._previous_angle1
-            cos_angle = np.cos(angle_radians)
-            sin_angle = np.sin(angle_radians)
-            rotated_x = temp_x * cos_angle - temp_y * sin_angle
-            rotated_y = temp_x * sin_angle + temp_y * cos_angle
-
-            # translate back
-            i[0] = rotated_x + next_point[0]
-            i[1] = rotated_y + next_point[1]
-        # print(self._polygon.vertices)
-        self._point = next_point
+        self._point += translation.astype(int)
+        rows, _ = np.shape(self.polygon.vertices)
+        self.polygon.vertices = Rotate2D(self.polygon.vertices, np.sum(self.polygon.vertices, axis=0) / rows, self.angle1 - self._previous_angle1)
+        self.polygon.vertices += translation.astype(int)
+        print(self._polygon.vertices)
 
     @property
     def sprite(self):
@@ -146,9 +137,38 @@ class PlayerProjectile():
         return self._previous_angle2
 
     @property
+    def previous_angle1(self):
+        return self._previous_angle1
+
+    @property
     def point(self):
         return self._point
 
     @property
     def polygon(self):
         return self._polygon
+
+
+def Rotate2D(points, center, angle):
+    '''pts = {} Rotates points(nx2) about center cnt(2) by angle ang(1) in radian'''
+    return np.dot(points - center, np.array([[np.cos(angle), np.sin(angle)], [-np.sin(angle), np.cos(angle)]])) + center
+
+
+if __name__ == '__main__':
+    pts = np.array([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]])
+    print(np.sum(pts, axis=0))
+    rotated = Rotate2D(pts, np.array([0.5, 0.5]), np.pi/4)
+    p = matplotlib.patches.Polygon(pts)
+    p.fill = False
+
+    r = matplotlib.patches.Polygon(rotated)
+    r.fill = False
+
+    fig, ax = plt.subplots()
+
+    ax.add_patch(p)
+    ax.add_patch(r)
+    ax.set_xlim([0, 10])
+    ax.set_ylim([0, 10])
+    # plt.plot(rotated)
+    plt.show()

@@ -26,6 +26,7 @@ class LeadWindow(arcade.Window):
         # self.sprites_list.append(player.sprite)
         self.set_update_rate(1 / 60)
         self._counter = 0
+        # self.begining_vertices = self._friendly.polygon.vertices.copy()
 
     # Creating on_draw() function to draw on the screen
     def on_draw(self):
@@ -36,7 +37,8 @@ class LeadWindow(arcade.Window):
                                       self.height, arcade.load_texture("resources/suma.png"))
         for i in self._friendly.polygon.vertices:
             arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
-        self.sprites_list.draw()
+        # for i in self.begining_vertices:
+        #     arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
         for i in self._enemy.polygon.vertices:
             arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
         self.sprites_list.draw()
@@ -50,18 +52,18 @@ class LeadWindow(arcade.Window):
         self._friendly.sprite.set_position(self._friendly.point[0], self._friendly.point[1])
 
         print((180 / np.pi) * (self._enemy.angle2 - self._enemy.previous_angle2))
-        self.sprites_list[0].turn_right((180 / np.pi) * abs((self._enemy.angle2 - self._enemy.previous_angle2)))
+        self.sprites_list[0].turn_left((180 / np.pi) * (self._enemy.angle1 - self._enemy.previous_angle1))
 
-        self.sprites_list[2].turn_left((180 / np.pi) * (-self._friendly.angle2 + self._friendly.previous_angle2))
+        self.sprites_list[2].turn_left((180 / np.pi) * (self._friendly.angle1 - self._friendly.previous_angle1))
 
         if SAT.is_colliding(self._enemy.polygon, self._target.polygon) or SAT.is_colliding(self._enemy.polygon,
                                                                                            self._friendly.polygon):
-            arcade.pause(5)
+            arcade.pause(10)
             arcade.exit()
 
         self.sprites_list.update()
 
-
+# uglovi da se podese na 90 i da se makne angle2
 if __name__ == '__main__':
     pg = pathGenerator.PathGenerator()
     path = pg.generate_enemy_path(np.array([500, 800]))

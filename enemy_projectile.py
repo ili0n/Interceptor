@@ -18,8 +18,8 @@ class EnemyProjectile(object):
     def __init__(self, path=None, max_engine=50, mass=1500, A=20, Cd=0.5):
         self._scale = 0.05
         self._A = A
-        self._acceleration = 12
-        self._velocity = 10
+        self._acceleration = 20
+        self._velocity = 8
         self._point = np.array([0, np.polyval(path, 0)])
         self._polygon = Polygon(np.array([
             [self._point[0], self._point[1] + 850 * self._scale],
@@ -31,10 +31,10 @@ class EnemyProjectile(object):
         self._Cd = Cd
         self._mass = mass
         self._weight = scipy.constants.g * mass
-        self._angle1 = 0
-        self._previous_angle1 = 0
-        self._angle2 = 0.9
-        self._previous_angle2 = 0
+        self._angle1 = 0.5 * np.pi
+        self._previous_angle1 = 0.5 * np.pi
+        self._angle2 = 0.5 * np.pi
+        self._previous_angle2 = 0.5 * np.pi
         self._s = 0
 
     def _calculate_drag(self, ro=0.5):
@@ -79,27 +79,16 @@ class EnemyProjectile(object):
         return fx_rk4[-1]
 
     def _update_points(self, distance):
-        # self._point = next_point
-        # print(self._goal_point)
-        next_point = np.array([
-            np.cos(self._angle1) * distance + self._point[0],
-            np.sin(self._angle1) * distance + self._point[1]
+        translation = np.array([
+            np.cos(self._angle1) * distance,
+            np.sin(self._angle1) * distance
         ])
-        for i in self._polygon.vertices:
-            temp_x = i[0] - self._point[0]
-            temp_y = i[1] - self._point[1]
-            # now apply rotatio
-            angle_radians = self._angle1 - self._previous_angle1
-            cos_angle = np.cos(angle_radians)
-            sin_angle = np.sin(angle_radians)
-            rotated_x = temp_x * cos_angle - temp_y * sin_angle
-            rotated_y = temp_x * sin_angle + temp_y * cos_angle
-
-            # translate back
-            i[0] = rotated_x + next_point[0]
-            i[1] = rotated_y + next_point[1]
-        # print(self._polygon.vertices)
-        self._point = next_point
+        self._point += translation.astype(int)
+        rows, _ = np.shape(self.polygon.vertices)
+        self.polygon.vertices = Rotate2D(self.polygon.vertices, np.sum(self.polygon.vertices, axis=0) / rows,
+                                         self.angle1 - self._previous_angle1)
+        self.polygon.vertices += translation.astype(int)
+        print(self._polygon.vertices)
 
     @property
     def velocity(self):
@@ -130,12 +119,21 @@ class EnemyProjectile(object):
         return self._previous_angle2
 
     @property
+    def previous_angle1(self):
+        return self._previous_angle1
+
+    @property
     def point(self):
         return self._point
 
     @property
     def polygon(self):
         return self._polygon
+
+
+def Rotate2D(points, center, angle):
+    '''pts = {} Rotates points(nx2) about center cnt(2) by angle ang(1) in radian'''
+    return np.dot(points - center, np.array([[np.cos(angle), np.sin(angle)], [-np.sin(angle), np.cos(angle)]])) + center
 
 
 if __name__ == '__main__':
