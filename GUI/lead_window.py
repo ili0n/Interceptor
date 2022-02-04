@@ -35,7 +35,7 @@ class LeadWindow(arcade.Window):
         arcade.draw_texture_rectangle(self.width // 2, self.height // 2, self.width,
                                       self.height, arcade.load_texture("resources/suma.png"))
         for i in self._friendly.polygon.vertices:
-            arcade.draw_circle_filled(i[0],i[1],2,arcade.color.BLACK)
+            arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
         self.sprites_list.draw()
         for i in self._enemy.polygon.vertices:
             arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
@@ -53,8 +53,6 @@ class LeadWindow(arcade.Window):
         self.sprites_list[0].turn_right((180 / np.pi) * abs((self._enemy.angle2 - self._enemy.previous_angle2)))
 
         self.sprites_list[2].turn_left((180 / np.pi) * (-self._friendly.angle2 + self._friendly.previous_angle2))
-
-
 
         if SAT.is_colliding(self._enemy.polygon, self._target.polygon) or SAT.is_colliding(self._enemy.polygon,
                                                                                            self._friendly.polygon):
