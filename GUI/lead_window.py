@@ -33,7 +33,12 @@ class LeadWindow(arcade.Window):
 
         # Drawing the background image
         arcade.draw_texture_rectangle(self.width // 2, self.height // 2, self.width,
-                                      self.height, arcade.load_texture("GUI/resources/suma.png"))
+                                      self.height, arcade.load_texture("resources/suma.png"))
+        for i in self._friendly.polygon.vertices:
+            arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
+        self.sprites_list.draw()
+        for i in self._enemy.polygon.vertices:
+            arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
         self.sprites_list.draw()
 
     def on_update(self, delta_time: float):
@@ -43,11 +48,12 @@ class LeadWindow(arcade.Window):
 
         self._friendly.calculate_distance(self._counter, self._enemy)
         self._friendly.sprite.set_position(self._friendly.point[0], self._friendly.point[1])
-        # self.
+
         print((180 / np.pi) * (self._enemy.angle2 - self._enemy.previous_angle2))
         self.sprites_list[0].turn_right((180 / np.pi) * abs((self._enemy.angle2 - self._enemy.previous_angle2)))
 
         self.sprites_list[2].turn_left((180 / np.pi) * (-self._friendly.angle2 + self._friendly.previous_angle2))
+
         if SAT.is_colliding(self._enemy.polygon, self._target.polygon) or SAT.is_colliding(self._enemy.polygon,
                                                                                            self._friendly.polygon):
             arcade.pause(5)
@@ -66,7 +72,7 @@ if __name__ == '__main__':
     trgt = target.Target(pg.enemy_target)
     trgt.sprite = arcade.sprite.Sprite("resources/lab.png", trgt.scale)
 
-    friendly = player_projectile.PlayerProjectile(pg.enemy_target + np.array([300, 300]))
+    friendly = player_projectile.PlayerProjectile(np.array([1000, 800]))
     friendly.sprite = arcade.sprite.Sprite("resources/player.png", 0.05)
 
     LeadWindow(1500, 1000, "Lead", enemy, trgt, friendly)
