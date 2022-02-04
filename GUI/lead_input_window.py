@@ -84,9 +84,9 @@ class LeadInputView(arcade.View):
             print("Start: ({0}, {1})".format(self.enemy_start_input_x.text, self.enemy_start_input_y.text))
             print("Middle: ({0}, {1})".format(self.friendly_start_input_x.text, self.friendly_start_input_y.text))
             print("End: ({0}, {1})".format(self.target_input_x.text, self.target_input_y.text))
-            if not is_int(self.ship_start_input_x.text) or not is_int(self.ship_start_input_y.text) \
-                    or not is_int(self.projectile_start_input_x.text) or not is_int(self.projectile_start_input_y.text) \
-                    or not is_int(self.velocity_input.text) or not is_int(self.look_ahead_input.text):
+            if not is_int(self.enemy_start_input_x.text) or not is_int(self.enemy_start_input_y.text) \
+                    or not is_int(self.friendly_start_input_x.text) or not is_int(self.friendly_start_input_y.text) \
+                    or not is_int(self.target_input_x.text) or not is_int(self.target_input_y.text):
                 return None
             enemy_start = np.array([int(self.enemy_start_input_x.text), int(self.enemy_start_input_y.text)])
             friendly_start = np.array([int(self.friendly_start_input_x.text), int(self.friendly_start_input_y.text)])
@@ -132,3 +132,9 @@ class LeadInputView(arcade.View):
         )
         self.manager.enable()
 
+def is_int(val):
+    try:
+        int(val)
+        return True
+    except ValueError:
+        return False
