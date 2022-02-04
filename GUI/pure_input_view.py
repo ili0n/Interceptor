@@ -95,6 +95,10 @@ class PureInputView(arcade.View):
             print("Projectile start: ({0}, {1})".format(self.projectile_start_input_x.text, self.projectile_start_input_y.text))
             print("Velocity: {0}".format(self.velocity_input.text))
             print("Look ahead distance: {0}".format(self.look_ahead_input.text))
+            if not is_int(self.ship_start_input_x.text) or not is_int(self.ship_start_input_y.text)\
+                    or not is_int(self.projectile_start_input_x.text) or not is_int(self.projectile_start_input_y.text) \
+                    or not is_int(self.velocity_input.text) or not is_int(self.look_ahead_input.text):
+                return None
             arcade.get_window().current_view.manager.disable()
             arcade.get_window().clear()
             projectile_start = np.array([int(self.projectile_start_input_x.text), int(self.projectile_start_input_y.text)])
@@ -133,3 +137,10 @@ class PureInputView(arcade.View):
                 child=self.rows.with_border(2, (20, 30, 40)))
         )
         self.manager.enable()
+
+def is_int(val):
+    try:
+        int(val)
+        return True
+    except ValueError:
+        return False
