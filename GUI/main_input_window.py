@@ -8,6 +8,7 @@ import arcade.gui
 # --- Method 1 for handling click events,
 # Create a child class.
 from GUI import pure_input_view
+from GUI import lead_input_window
 
 
 class QuitButton(arcade.gui.UIFlatButton):
@@ -29,7 +30,11 @@ class PureButton(arcade.gui.UIFlatButton):
 
 class LeadButton(arcade.gui.UIFlatButton):
     def on_click(self, event: arcade.gui.UIOnClickEvent):
-        pass
+        arcade.get_window().current_view.manager.disable()
+        arcade.get_window().clear()
+        lead_view = lead_input_window.LeadInputView()
+        arcade.get_window().show_view(lead_view)
+
     # TODO pure run
 
 class MainInputView(arcade.View):

@@ -47,11 +47,12 @@ class LeadWindow(arcade.Window):
         print((180 / np.pi) * (self._enemy.angle2 - self._enemy.previous_angle2))
         self.sprites_list[0].turn_right((180 / np.pi) * abs((self._enemy.angle2 - self._enemy.previous_angle2)))
 
-        self.sprites_list[2].turn_left((180 / np.pi) * ((-self._friendly.angle2 + self._friendly.previous_angle2)))
-        self.sprites_list.update()
+        self.sprites_list[2].turn_left((180 / np.pi) * (-self._friendly.angle2 + self._friendly.previous_angle2))
         if SAT.is_colliding(self._enemy.polygon, self._target.polygon) or SAT.is_colliding(self._enemy.polygon,
                                                                                            self._friendly.polygon):
             arcade.finish_render()
+
+        self.sprites_list.update()
 
 
 if __name__ == '__main__':
