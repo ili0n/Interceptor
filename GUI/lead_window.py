@@ -8,7 +8,7 @@ import player_projectile
 import target
 
 
-class LeadWindow(arcade.Window):
+class LeadView(arcade.Window):
 
     def __init__(self, width, height, title, enemy, target, friendly):
         super().__init__(width, height, title)
@@ -68,6 +68,6 @@ if __name__ == '__main__':
     friendly = player_projectile.PlayerProjectile(pg.enemy_target + np.array([300, 300]))
     friendly.sprite = arcade.sprite.Sprite("resources/player.png", 0.05)
 
-    LeadWindow(1500, 1000, "Lead", enemy, trgt, friendly)
+    LeadView(1500, 1000, "Lead", enemy, trgt, friendly)
 
     arcade.run()

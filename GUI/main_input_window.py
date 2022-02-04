@@ -35,7 +35,6 @@ class LeadButton(arcade.gui.UIFlatButton):
         lead_view = lead_input_window.LeadInputView()
         arcade.get_window().show_view(lead_view)
 
-    # TODO pure run
 
 class MainInputView(arcade.View):
     def __init__(self):
