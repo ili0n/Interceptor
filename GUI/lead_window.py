@@ -50,7 +50,8 @@ class LeadWindow(arcade.Window):
         self.sprites_list[2].turn_left((180 / np.pi) * (-self._friendly.angle2 + self._friendly.previous_angle2))
         if SAT.is_colliding(self._enemy.polygon, self._target.polygon) or SAT.is_colliding(self._enemy.polygon,
                                                                                            self._friendly.polygon):
-            arcade.finish_render()
+            arcade.pause(5)
+            arcade.exit()
 
         self.sprites_list.update()
 
@@ -68,6 +69,6 @@ if __name__ == '__main__':
     friendly = player_projectile.PlayerProjectile(pg.enemy_target + np.array([300, 300]))
     friendly.sprite = arcade.sprite.Sprite("resources/player.png", 0.05)
 
-    # LeadView(1500, 1000, "Lead", enemy, trgt, friendly)
+    LeadWindow(1500, 1000, "Lead", enemy, trgt, friendly)
 
     arcade.run()

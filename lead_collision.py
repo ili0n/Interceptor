@@ -48,12 +48,11 @@ def lead_collision(vl, rl, vt, rt):
 
     # lead direction is from intersection to center of circle
     lead_direction = intersection - (rt + vt)
-    return lead_direction / np.linalg.norm(lead_direction)
 
-    # # with Thales theorem we find how long the vector should be
-    # ratio = np.linalg.norm(rt - rl) / (intersection - rl)
-    # result_vector = ratio * lead_direction
-    # return result_vector / np.linalg.norm(result_vector)
+    # with Thales theorem we find how long the vector should be
+    ratio = np.abs(np.linalg.norm(rt - rl) / np.linalg.norm(rt - intersection))
+    result_vector = ratio * lead_direction
+    return lead_direction / np.linalg.norm(lead_direction), np.linalg.norm(result_vector)
 
 
 def line(dot1, dot2):

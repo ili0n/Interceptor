@@ -6,7 +6,7 @@ from SAT import Polygon
 
 
 class PlayerProjectile():
-    def __init__(self, inital_point, max_engine=50, mass=1500, A=20, Cd=0.5):
+    def __init__(self, inital_point, max_engine=15000, mass=1500, A=20, Cd=0.5):
         self._scale = 0.05
         self._A = A
         self._acceleration = 12
@@ -17,7 +17,7 @@ class PlayerProjectile():
             [self._point[0] + 200 * self._scale, self._point[1] + 820 * self._scale],
             [self._point[0] - 200 * self._scale, self._point[1] + 820 * self._scale],
             [self._point[0] + 200 * self._scale, self._point[1] - 820 * self._scale],
-            [self._point[0] - 200 * self._scale, self._point[1] - 820 * self._scale]], dtype="f"))
+            [self._point[0] - 200 * self._scale, self._point[1] - 820 * self._scale]]))
         self._Cd = Cd
         self._mass = mass
         self._weight = scipy.constants.g * mass
@@ -37,8 +37,8 @@ class PlayerProjectile():
 
     def calculate_path_force(self, enemy):
         drag = self._calculate_drag()
-        drag_x = drag * np.cos(self._angle1)
-        drag_y = drag * np.sin(self._angle1)
+        # drag_x = drag * np.cos(self._angle1)
+        # drag_y = drag * np.sin(self._angle1)
 
         # we have length of vector for enemy direction
         norm, _ = enemy.calculate_path_force()
@@ -49,8 +49,17 @@ class PlayerProjectile():
         vector_of_prediction = np.array([norm, 0])
         vector_of_prediction = np.dot(rot, vector_of_prediction)
 
+        F = np.abs(self._max_engine - drag)
+        i = np.array([1, 0])
+        cos = np.dot(vector_of_prediction, i) / np.linalg.norm(vector_of_prediction) / np.linalg.norm(i)
+        angle = np.arccos(cos)
+
+        norm = np.sqrt(
+            (F * np.sin(angle) - self._weight) ** 2 + (F * np.cos(angle)) ** 2
+        )
+
         # we have length of friendly vector
-        norm = 100
+        # norm = 100
         # we have angle of friendly vector
         theta = np.deg2rad(self.angle1)
         rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
@@ -58,8 +67,13 @@ class PlayerProjectile():
         vector_of_movements = np.array([norm, 0])
         vector_of_movements = np.dot(rot, vector_of_movements)
 
-        push = self._max_engine * lead_collision.lead_collision(vector_of_movements, self._point, vector_of_prediction,
+        direction, length = lead_collision.lead_collision(vector_of_movements, self._point, vector_of_prediction,
                                                                 enemy.point)
+        if length < self._max_engine:
+            engine_power = length
+        else:
+            engine_power = self._max_engine
+        push = engine_power * direction
         # calculate new angle
         i = np.array([1, 0])
         cos = np.dot(push, i) / np.linalg.norm(push) / np.linalg.norm(i)
@@ -71,9 +85,10 @@ class PlayerProjectile():
         i = np.array([1, 0])
         cos = np.dot(between, i) / np.linalg.norm(between) / np.linalg.norm(i)
         self._angle2 = np.arccos(cos)
-        return 100
+        return F
 
     def calculate_distance(self, t, enemy):
+        # lose racunanje sile, treba sopstvene a ne protivnicke
         F = self.calculate_path_force(enemy)
         dds = lambda *argv: F / self._mass
         tb = t + 1 / 60
@@ -93,7 +108,7 @@ class PlayerProjectile():
             temp_x = i[0] - self._point[0]
             temp_y = i[1] - self._point[1]
 
-            # now apply rotatio
+            # now apply rotation
             angle_radians = self._angle2 - self._previous_angle2
             cos_angle = np.cos(angle_radians)
             sin_angle = np.sin(angle_radians)
