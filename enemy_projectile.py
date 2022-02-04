@@ -32,6 +32,7 @@ class EnemyProjectile(object):
         self._mass = mass
         self._weight = scipy.constants.g * mass
         self._angle1 = 0
+        self._previous_angle1 = 0
         self._angle2 = 0.9
         self._previous_angle2 = 0
         self._s = 0
@@ -46,7 +47,7 @@ class EnemyProjectile(object):
 
     def calculate_path_force(self):
         path_prime = np.polyder(self._path)
-        self._angle1 = np.arctan(np.polyval(path_prime, self._point[0]))
+        self._previous_angle1, self._angle1 =self._angle1, np.arctan(np.polyval(path_prime, self._point[0]))
         drag = self._calculate_drag()
         drag_x = drag * np.cos(self._angle1)
         drag_y = drag * np.sin(self._angle1)
@@ -78,24 +79,27 @@ class EnemyProjectile(object):
         return fx_rk4[-1]
 
     def _update_points(self, distance):
-        dist_arr = np.array([distance * np.cos(self._angle1), distance * np.sin(self._angle1)])
-        self._point += dist_arr
+        # self._point = next_point
+        # print(self._goal_point)
+        next_point = np.array([
+            np.cos(self._angle1) * distance + self._point[0],
+            np.sin(self._angle1) * distance + self._point[1]
+        ])
         for i in self._polygon.vertices:
-            i += dist_arr
             temp_x = i[0] - self._point[0]
             temp_y = i[1] - self._point[1]
-
             # now apply rotatio
-            angle_radians = self._angle2 - self._previous_angle2
+            angle_radians = self._angle1 - self._previous_angle1
             cos_angle = np.cos(angle_radians)
             sin_angle = np.sin(angle_radians)
             rotated_x = temp_x * cos_angle - temp_y * sin_angle
             rotated_y = temp_x * sin_angle + temp_y * cos_angle
 
             # translate back
-            i[0] = rotated_x + self._point[0]
-            i[1] = rotated_y + self._point[1]
-        print(self._polygon.vertices)
+            i[0] = rotated_x + next_point[0]
+            i[1] = rotated_y + next_point[1]
+        # print(self._polygon.vertices)
+        self._point = next_point
 
     @property
     def velocity(self):

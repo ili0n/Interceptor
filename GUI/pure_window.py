@@ -39,6 +39,11 @@ class PlayerWindow(arcade.Window):
         # Drawing the background image
         arcade.draw_texture_rectangle(self.width // 2, self.height // 2, self.width,
                                       self.height, arcade.load_texture("resources/suma.png"))
+        for i in self._player.polygon.vertices:
+            arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
+        for i in self._pure_projectile.polygon.vertices:
+            arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
+
         self.sprites_list.draw()
 
     def on_key_press(self, symbol, modifiers: int):
@@ -97,7 +102,7 @@ class PlayerWindow(arcade.Window):
 if __name__ == "__main__":
     plr = player.Player(np.array([800, 800], dtype="i"), 250)
     plr.sprite = arcade.Sprite("resources/ufo.png", plr.scale)
-    pp = pure_pursuit_projectile.PlayerProjectile(np.array([1000, 100], dtype="i"))
+    pp = pure_pursuit_projectile.PlayerProjectile(np.array([0, 100], dtype="i"))
     pp.sprite = arcade.Sprite("resources/player.png", pp.scale)
     PlayerWindow(1500, 1000, "pure", plr, pp)
     arcade.run()
