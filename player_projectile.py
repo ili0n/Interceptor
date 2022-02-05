@@ -72,7 +72,10 @@ class PlayerProjectile():
                                                               vector_of_prediction,
                                                               enemy.point)
         self.previous_length = length
-        engine_power = norm
+        if length < np.linalg.norm(vector_of_movements):
+            engine_power = length
+        else:
+            engine_power = norm
         push = engine_power * direction
         # calculate new angle
         i = np.array([1, 0])
