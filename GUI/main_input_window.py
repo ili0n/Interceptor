@@ -74,7 +74,7 @@ class MainInputView(arcade.View):
 
 class MainInputWindow(arcade.Window):
     def __init__(self):
-        super().__init__(800, 600, "UIFlatButton Example", resizable=True)
+        super().__init__(800, 600, "Projectile interceptor", resizable=True)
         main_view = MainInputView()
         self.show_view(main_view)
 
