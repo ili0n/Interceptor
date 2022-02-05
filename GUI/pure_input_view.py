@@ -107,7 +107,7 @@ class PureInputView(arcade.View):
 
             plr = player.Player(ship_start, int(self.velocity_input.text))
             plr.sprite = arcade.Sprite("GUI/resources/ufo.png", plr.scale)
-            pp = pure_pursuit_projectile.PlayerProjectile(projectile_start)
+            pp = pure_pursuit_projectile.PlayerProjectile(projectile_start,int(self.look_ahead_input.text))
             pp.sprite = arcade.Sprite("GUI/resources/player.png", pp.scale)
             pure_window.PlayerWindow(1500, 1000, "pure", plr, pp)
             arcade.run()
