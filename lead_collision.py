@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import arcade
 
 """
     vector of position is described with equation
@@ -53,6 +54,26 @@ def lead_collision(vl, rl, vt, rt):
     ratio = np.abs(np.linalg.norm(rt - rl) / np.linalg.norm(rt - intersection))
     result_vector = ratio * lead_direction
     return lead_direction / np.linalg.norm(lead_direction), np.linalg.norm(result_vector)
+
+def plot(vl, rl, vt, rt):
+    # we find closer intersection
+
+    circle_center = rt + vt
+    r1, r2 = find_vector_circle_intersection(rl, rt - rl, circle_center, np.dot(vl, vl))
+    dist1 = np.linalg.norm(r1 - rl)
+    dist2 = np.linalg.norm(r2 - rl)
+    if dist1 > dist2:
+        intersection = r1
+    else:
+        intersection = r2
+
+    # lead direction is from intersection to center of circle
+    lead_direction = intersection - (rt + vt)
+
+    # with Thales theorem we find how long the vector should be
+    ratio = np.abs(np.linalg.norm(rt - rl) / np.linalg.norm(rt - intersection))
+    result_vector = ratio * lead_direction
+    return r1, r2, circle_center, result_vector
 
 
 def line(dot1, dot2):

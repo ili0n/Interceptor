@@ -28,6 +28,7 @@ class PlayerProjectile():
         self._previous_angle2 = 0.5 * np.pi
         self._s = 0
         self._max_engine = max_engine
+        self.previous_length = 0
 
     def _calculate_drag(self, ro=0.5):
         # CD coefficient of drag
@@ -39,13 +40,64 @@ class PlayerProjectile():
 
     def calculate_path_force(self, enemy):
         drag = self._calculate_drag()
+
+        # we have length of vector for enemy direction
+        norm, _ = enemy.calculate_path_force()
+        # we have angle of vector
+        theta = enemy.angle1
+        rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+        # we form vector and rotate it
+        vector_of_prediction = np.array([norm, 0])
+        vector_of_prediction = np.dot(rot, vector_of_prediction)
+
+        F = np.abs(self._max_engine - drag)
+        i = np.array([1, 0])
+
+        norm = np.sqrt(
+            (F * np.sin(self.angle1) - self._weight) ** 2 + (F * np.cos(self.angle1)) ** 2
+        )
+
+        # we have length of friendly vector
+        # we have angle of friendly vector
+        theta = self.angle1
+        rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
+        # we form vector and rotate it
+        vector_of_movements = np.array([norm, 0])
+        vector_of_movements = np.dot(rot, vector_of_movements)
+
+        direction, length = lead_collision.lead_collision(vector_of_movements, self.polygon.vertices[0],
+                                                              vector_of_prediction,
+                                                              enemy.point)
+        self.previous_length = length
+        engine_power = norm
+        push = engine_power * direction
+        # calculate new angle
+        i = np.array([1, 0])
+        cos = np.dot(push, i) / np.linalg.norm(push) / np.linalg.norm(i)
+        self._previous_angle1 = self._angle1
+        self._angle1 = np.arccos(cos)
+        # diskutabilno
+        if direction[1] < 0:
+            self._angle1 *= -1
+
+        # new angle points to enemy rocket
+        between = - self.point + enemy.point
+        i = np.array([1, 0])
+        cos = np.dot(between, i) / np.linalg.norm(between) / np.linalg.norm(i)
+        self._previous_angle2, self._angle2 = self.angle2, np.arccos(cos)
+        if between[0] < 0:
+            self._angle2 *= -1
+        return F
+
+    def plot(self, enemy):
+        drag = self._calculate_drag()
         # drag_x = drag * np.cos(self._angle1)
         # drag_y = drag * np.sin(self._angle1)
 
         # we have length of vector for enemy direction
         norm, _ = enemy.calculate_path_force()
         # we have angle of vector
-        theta = np.deg2rad(enemy.angle1)
+        theta = enemy.angle1
         rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
         # we form vector and rotate it
         vector_of_prediction = np.array([norm, 0])
@@ -61,36 +113,20 @@ class PlayerProjectile():
         # we have length of friendly vector
         # norm = 100
         # we have angle of friendly vector
-        theta = np.deg2rad(self.angle1)
+        theta = self.angle1
         rot = np.array([[np.cos(theta), -np.sin(theta)], [np.sin(theta), np.cos(theta)]])
         # we form vector and rotate it
         vector_of_movements = np.array([norm, 0])
         vector_of_movements = np.dot(rot, vector_of_movements)
 
-        direction, length = lead_collision.lead_collision(vector_of_movements, self._point, vector_of_prediction,
+        direction, length = lead_collision.lead_collision(vector_of_movements, self.polygon.vertices[0],
+                                                          vector_of_prediction,
                                                           enemy.point)
-        if length < norm and length != 0:
-            engine_power = length
-        else:
-            engine_power = norm
-        push = engine_power * direction
-        # calculate new angle
-        i = np.array([1, 0])
-        cos = np.dot(push, i) / np.linalg.norm(push) / np.linalg.norm(i)
-        self._previous_angle1 = self._angle1
-        self._angle1 = np.arccos(cos)
-        # diskutabilno
-        if direction[0] < 0:
-            self._angle1 *= -1
-
-        # new angle points to enemy rocket
-        between = - self.point + enemy.point
-        i = np.array([1, 0])
-        cos = np.dot(between, i) / np.linalg.norm(between) / np.linalg.norm(i)
-        self._previous_angle2, self._angle2 = self.angle2, np.arccos(cos)
-        if between[0] < 0:
-            self._angle2 *= -1
-        return F
+        self.previous_length = length
+        engine_power = norm
+        return lead_collision.plot(vector_of_movements, self.polygon.vertices[0],
+                                                              vector_of_prediction,
+                                                              enemy.point) + (vector_of_movements,)
 
     def calculate_distance(self, t, enemy):
         # lose racunanje sile, treba sopstvene a ne protivnicke
