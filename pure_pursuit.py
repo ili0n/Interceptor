@@ -48,9 +48,9 @@ def calculate_angle(goal_point, current_point):
         # else:
         #     new_x = np.array(current_point[0] - distance)
         if current_point[0] - goal_point[0] > 0:
-            return 3 * np.pi / 2
+            return 3*np.pi/2
         else:
-            return np.pi / 2
+            return 0
 
 
     if leveled_goal_point[0] == leveled_current_point[0]:
@@ -58,10 +58,10 @@ def calculate_angle(goal_point, current_point):
         #     new_y = np.array(current_point[1] + distance)
         # else:
         #     new_y = np.array(current_point[1] - distance)
-        if current_point[0] - goal_point[0] > 0:
-            return np.pi
+        if current_point[1] - goal_point[1] > 0:
+            return 3 * (np.pi / 2)
         else:
-            return 0
+            return np.pi / 2
 
     l_squared = (goal_point[0] - current_point[0]) ** 2 + (goal_point[1] - current_point[1]) ** 2
     r = l_squared / (2 * leveled_goal_point[1])
