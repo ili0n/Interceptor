@@ -8,8 +8,9 @@ import nans_lib
 from SAT import Polygon
 import matplotlib.pyplot as plt
 
+
 class PlayerProjectile():
-    def __init__(self, inital_point, max_engine=1000, mass=500, A=20, Cd=0.5):
+    def __init__(self, inital_point, max_engine=8000, mass=500, A=20, Cd=0.5):
         self._scale = 0.05
         self._A = A
         self._acceleration = 12
