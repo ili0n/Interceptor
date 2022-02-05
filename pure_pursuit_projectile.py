@@ -3,7 +3,7 @@ import scipy.constants
 
 import nans_lib
 import pure_pursuit
-from SAT import Polygon
+import SAT
 
 
 class PlayerProjectile():
@@ -13,7 +13,7 @@ class PlayerProjectile():
         self._acceleration = 12
         self._velocity = 7
         self._point = inital_point
-        self._polygon = Polygon(np.array([
+        self._polygon = SAT.Polygon(np.array([
             [self._point[0], self._point[1] + 850 * self._scale],
             [self._point[0] + 200 * self._scale, self._point[1] + 820 * self._scale],
             [self._point[0] + 200 * self._scale, self._point[1] - 820 * self._scale],
@@ -22,8 +22,8 @@ class PlayerProjectile():
         self._Cd = Cd
         self._mass = mass
         self._weight = scipy.constants.g * mass
-        self._angle = 0
-        self._previous_angle = 0
+        self._angle = np.pi * 0.5
+        self._previous_angle = np.pi * 0.5
         self._s = 0
         self._max_engine = max_engine
         self._goal_point = None
@@ -59,28 +59,16 @@ class PlayerProjectile():
         return fx_rk4[-1]
 
     def _update_points(self, distance):
-
-        # self._point = next_point
-        # print(self._goal_point)
-        next_point = np.array([
-            np.cos(self._angle)*distance + self._point[0],
-            np.sin(self._angle) * distance + self._point[1]
+        translation = np.array([
+            np.cos(self._angle) * distance,
+            np.sin(self._angle) * distance
         ])
-        for i in self._polygon.vertices:
-            temp_x = i[0] - self._point[0]
-            temp_y = i[1] - self._point[1]
-            # now apply rotatio
-            angle_radians = self._angle - self._previous_angle
-            cos_angle = np.cos(angle_radians)
-            sin_angle = np.sin(angle_radians)
-            rotated_x = temp_x * cos_angle - temp_y * sin_angle
-            rotated_y = temp_x * sin_angle + temp_y * cos_angle
-
-            # translate back
-            i[0] = rotated_x + next_point[0]
-            i[1] = rotated_y + next_point[1]
-        # print(self._polygon.vertices)
-        self._point = next_point
+        self._point += translation.astype(int)
+        rows, _ = np.shape(self.polygon.vertices)
+        self.polygon.vertices = SAT.rotate(self.polygon.vertices, np.sum(self.polygon.vertices, axis=0) / rows,
+                                           self.angle - self._previous_angle)
+        self.polygon.vertices += translation.astype(int)
+        print(self._polygon.vertices)
 
     @property
     def sprite(self):
