@@ -39,6 +39,11 @@ def is_colliding(a, b):
     return min_separation(a, b) <= 0
 
 
+def rotate(points, center, angle):
+    '''pts = {} Rotates points(nx2) about center cnt(2) by angle ang(1) in radian'''
+    return np.dot(points - center, np.array([[np.cos(angle), np.sin(angle)], [-np.sin(angle), np.cos(angle)]])) + center
+
+
 if __name__ == '__main__':
     a = Polygon(np.array([[1, 1], [1, 2], [2, 2], [2, 1]], dtype="f"))
     b = Polygon(np.array([[2, 1.5], [2, 1.75], [2.5, 1.75], [2.5, 1.5]], dtype="f"))

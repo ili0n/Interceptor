@@ -1,6 +1,8 @@
 import matplotlib.patches
 import numpy as np
 import scipy.constants
+
+import SAT
 import lead_collision
 import nans_lib
 from SAT import Polygon
@@ -129,7 +131,6 @@ class PlayerProjectile():
                                                               enemy.point) + (vector_of_movements,)
 
     def calculate_distance(self, t, enemy):
-        # lose racunanje sile, treba sopstvene a ne protivnicke
         F = self.calculate_path_force(enemy)
         dds = lambda *argv: F / self._mass
         tb = t + 1 / 60
@@ -148,7 +149,7 @@ class PlayerProjectile():
         ])
         self._point += translation.astype(int)
         rows, _ = np.shape(self.polygon.vertices)
-        self.polygon.vertices = Rotate2D(self.polygon.vertices, np.sum(self.polygon.vertices, axis=0) / rows, self.angle1 - self._previous_angle1)
+        self.polygon.vertices = SAT.rotate(self.polygon.vertices, np.sum(self.polygon.vertices, axis=0) / rows, self.angle1 - self._previous_angle1)
         self.polygon.vertices += translation.astype(int)
         print(self._polygon.vertices)
 
@@ -185,15 +186,10 @@ class PlayerProjectile():
         return self._polygon
 
 
-def Rotate2D(points, center, angle):
-    '''pts = {} Rotates points(nx2) about center cnt(2) by angle ang(1) in radian'''
-    return np.dot(points - center, np.array([[np.cos(angle), np.sin(angle)], [-np.sin(angle), np.cos(angle)]])) + center
-
-
 if __name__ == '__main__':
     pts = np.array([[0, 0], [1, 0], [1, 1], [0, 1], [0, 0]])
     print(np.sum(pts, axis=0))
-    rotated = Rotate2D(pts, np.array([0.5, 0.5]), np.pi/4)
+    rotated = SAT.rotate(pts, np.array([0.5, 0.5]), np.pi/4)
     p = matplotlib.patches.Polygon(pts)
     p.fill = False
 

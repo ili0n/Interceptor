@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.constants
 
+import SAT
 import nans_lib
 import pathGenerator
 from SAT import Polygon
@@ -19,7 +20,7 @@ class EnemyProjectile(object):
         self._scale = 0.05
         self._A = A
         self._acceleration = 20
-        self._velocity = 8
+        self._velocity = 10
         self._point = np.array([0, np.polyval(path, 0)])
         self._polygon = Polygon(np.array([
             [self._point[0], self._point[1] + 850 * self._scale],
@@ -47,7 +48,8 @@ class EnemyProjectile(object):
 
     def calculate_path_force(self):
         path_prime = np.polyder(self._path)
-        self._previous_angle1, self._angle1 =self._angle1, np.arctan(np.polyval(path_prime, self._point[0]))
+        self._previous_angle1= self._angle1
+        self._angle1 = np.arctan(np.polyval(path_prime, self._point[0]))
         drag = self._calculate_drag()
         drag_x = drag * np.cos(self._angle1)
         drag_y = drag * np.sin(self._angle1)
@@ -85,7 +87,7 @@ class EnemyProjectile(object):
         ])
         self._point += translation.astype(int)
         rows, _ = np.shape(self.polygon.vertices)
-        self.polygon.vertices = Rotate2D(self.polygon.vertices, np.sum(self.polygon.vertices, axis=0) / rows,
+        self.polygon.vertices = rotate(self.polygon.vertices, np.sum(self.polygon.vertices, axis=0) / rows,
                                          self.angle1 - self._previous_angle1)
         self.polygon.vertices += translation.astype(int)
         print(self._polygon.vertices)
@@ -129,9 +131,7 @@ class EnemyProjectile(object):
     @property
     def polygon(self):
         return self._polygon
-
-
-def Rotate2D(points, center, angle):
+def rotate(points, center, angle):
     '''pts = {} Rotates points(nx2) about center cnt(2) by angle ang(1) in radian'''
     return np.dot(points - center, np.array([[np.cos(angle), np.sin(angle)], [-np.sin(angle), np.cos(angle)]])) + center
 
