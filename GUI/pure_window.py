@@ -31,7 +31,6 @@ class PlayerWindow(arcade.Window):
         self._down = False
         # self._pure_projectile.goal_point = self._player.point
 
-
     # Creating on_draw() function to draw on the screen
     def on_draw(self):
         arcade.start_render()
@@ -88,7 +87,8 @@ class PlayerWindow(arcade.Window):
         self._player.sprite.set_position(self._player.point[0], self._player.point[1])
 
         self._pure_projectile.goal_point = pure_pursuit.find_goal_point(self._pure_projectile.point,
-                                                                        self._player.polygon.vertices)
+                                                                        self._player.polygon.vertices,
+                                                                        self._pure_projectile.lookahead)
         print(self._pure_projectile.goal_point)
         self._pure_projectile.calculate_distance(delta_time, self._player)
         self._pure_projectile.sprite.set_position(int(self._pure_projectile.point[0]),
@@ -102,10 +102,10 @@ class PlayerWindow(arcade.Window):
             arcade.exit()
 
 
-if __name__ == "__main__":
-    plr = player.Player(np.array([800, 800], dtype="i"), 250)
-    plr.sprite = arcade.Sprite("resources/ufo.png", plr.scale)
-    pp = pure_pursuit_projectile.PlayerProjectile(np.array([1000, 100], dtype="i"))
-    pp.sprite = arcade.Sprite("resources/player.png", pp.scale)
-    PlayerWindow(1500, 1000, "pure", plr, pp)
-    arcade.run()
+# if __name__ == "__main__":
+#     plr = player.Player(np.array([800, 800], dtype="i"), 250)
+#     plr.sprite = arcade.Sprite("resources/ufo.png", plr.scale)
+#     pp = pure_pursuit_projectile.PlayerProjectile(np.array([1000, 100], dtype="i"))
+#     pp.sprite = arcade.Sprite("resources/player.png", pp.scale)
+#     PlayerWindow(1500, 1000, "pure", plr, pp)
+#     arcade.run()

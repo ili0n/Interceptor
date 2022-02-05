@@ -7,7 +7,7 @@ from SAT import Polygon
 
 
 class PlayerProjectile():
-    def __init__(self, inital_point, max_engine=20, mass=1500, A=20, Cd=0.5):
+    def __init__(self, inital_point,lookahead, max_engine=20, mass=1500, A=20, Cd=0.5):
         self._scale = 0.05
         self._A = A
         self._acceleration = 12
@@ -27,6 +27,7 @@ class PlayerProjectile():
         self._s = 0
         self._max_engine = max_engine
         self._goal_point = None
+        self.lookahead = lookahead
 
     def _calculate_drag(self, ro=0.5):
         # CD coefficient of drag
