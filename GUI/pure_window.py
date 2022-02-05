@@ -38,10 +38,7 @@ class PlayerWindow(arcade.Window):
         # Drawing the background image
         arcade.draw_texture_rectangle(self.width // 2, self.height // 2, self.width,
                                       self.height, arcade.load_texture("GUI/resources/suma.png"))
-        for i in self._player.polygon.vertices:
-            arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
-        for i in self._pure_projectile.polygon.vertices:
-            arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
+
 
         self.sprites_list.draw()
 
@@ -99,6 +96,7 @@ class PlayerWindow(arcade.Window):
         # print((180 / np.pi) * abs((self._pure_projectile.angle - self._pure_projectile.previous_angle)))
 
         if SAT.is_colliding(self._player.polygon, self._pure_projectile.polygon):
+            arcade.pause(3)
             arcade.exit()
 
 

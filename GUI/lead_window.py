@@ -35,7 +35,7 @@ class LeadWindow(arcade.Window):
 
         # Drawing the background image
         arcade.draw_texture_rectangle(self.width // 2, self.height // 2, self.width,
-                                      self.height, arcade.load_texture("resources/suma.png"))
+                                      self.height, arcade.load_texture("GUI/resources/suma.png"))
         # for i in self._friendly.polygon.vertices:
         #     arcade.draw_circle_filled(i[0], i[1], 2, arcade.color.BLACK)
         # for i in self.begining_vertices:
@@ -68,7 +68,7 @@ class LeadWindow(arcade.Window):
 
         if SAT.is_colliding(self._enemy.polygon, self._target.polygon) or SAT.is_colliding(self._enemy.polygon,
                                                                                            self._friendly.polygon):
-            arcade.pause(10)
+            arcade.pause(3)
             arcade.exit()
 
         self.sprites_list.update()
