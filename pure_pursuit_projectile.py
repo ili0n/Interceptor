@@ -22,7 +22,7 @@ class PlayerProjectile():
         self._Cd = Cd
         self._mass = mass
         self._weight = scipy.constants.g * mass
-        self._angle = 0
+        self._angle = np.pi / 2
         self._previous_angle = 0
         self._s = 0
         self._max_engine = max_engine
@@ -59,13 +59,12 @@ class PlayerProjectile():
         return fx_rk4[-1]
 
     def _update_points(self, distance):
-
         # self._point = next_point
         # print(self._goal_point)
         next_point = np.array([
-            np.cos(self._angle)*distance + self._point[0],
+            np.cos(self._angle) * distance + self._point[0],
             np.sin(self._angle) * distance + self._point[1]
-        ])
+        ], dtype="i")
         for i in self._polygon.vertices:
             temp_x = i[0] - self._point[0]
             temp_y = i[1] - self._point[1]
@@ -116,8 +115,8 @@ class PlayerProjectile():
 
     @property
     def goal_point(self):
-        return  self._goal_point
+        return self._goal_point
 
     @goal_point.setter
-    def goal_point(self,goal):
+    def goal_point(self, goal):
         self._goal_point = goal

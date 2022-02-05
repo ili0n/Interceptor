@@ -18,11 +18,7 @@ class QuitButton(arcade.gui.UIFlatButton):
 
 class PureButton(arcade.gui.UIFlatButton):
     def on_click(self, event: arcade.gui.UIOnClickEvent):
-        # arcade.exit()
-        # arcade.set_window(pure_input_window.PureInputWindow())
-        # arcade.close_window()
-        # pure_input_window.PureInputWindow()
-        # arcade.close_window()
+        arcade.get_window().current_view.manager.disable()
         arcade.get_window().clear()
         pure_view = pure_input_view.PureInputView()
         arcade.get_window().show_view(pure_view)
