@@ -90,10 +90,15 @@ class PlayerWindow(arcade.Window):
         self._pure_projectile.calculate_distance(delta_time, self._player)
         self._pure_projectile.sprite.set_position(int(self._pure_projectile.point[0]),
                                                   int(self._pure_projectile.point[1]))
-        self._pure_projectile.sprite.turn_right((180 / np.pi) * abs((self._pure_projectile.angle
-                                                                     - self._pure_projectile.previous_angle)))
 
-        # print((180 / np.pi) * abs((self._pure_projectile.angle - self._pure_projectile.previous_angle)))
+        # if self._pure_projectile.point[1]-self._player.point[1] <0:
+        #     self._pure_projectile.sprite.turn_right((180 / np.pi) * (self._pure_projectile.angle
+        #                                                              - self._pure_projectile.previous_angle))
+        # else:
+        self._pure_projectile.sprite.turn_left((180 / np.pi) * (self._pure_projectile.angle
+                                                                     - self._pure_projectile.previous_angle))
+
+        print((180 / np.pi) * abs((self._pure_projectile.angle - self._pure_projectile.previous_angle)))
 
         if SAT.is_colliding(self._player.polygon, self._pure_projectile.polygon):
             arcade.pause(3)

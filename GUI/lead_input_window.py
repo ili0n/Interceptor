@@ -58,7 +58,7 @@ class LeadInputView(arcade.View):
         self.rows = arcade.gui.UIBoxLayout()
 
         self.enemy_start_box, self.enemy_position_start_label, self.enemy_start_input_x, self.enemy_start_input_y = generate_xy_input(
-            "Enemy start position: ", "X for start", "Y for start")
+            "Enemy middle position: ", "X for start", "Y for start")
         self.rows.add(self.enemy_start_box)
 
 
@@ -93,8 +93,8 @@ class LeadInputView(arcade.View):
             target_position = np.array([int(self.target_input_x.text), int(self.target_input_y.text)])
             arcade.get_window().current_view.manager.disable()
             arcade.get_window().clear()
-            pg = pathGenerator.PathGenerator(enemy_start, target_position, friendly_start)
-            path = pg.generate_enemy_path(np.array([500, 800]))
+            pg = pathGenerator.PathGenerator(np.array([0, 0]), target_position, friendly_start)
+            path = pg.generate_enemy_path(enemy_start)
 
             enemy = enemy_projectile.EnemyProjectile(path)
             enemy.sprite = arcade.sprite.Sprite("GUI/resources//enemy.png", 0.05)
