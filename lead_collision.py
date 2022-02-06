@@ -39,7 +39,7 @@ def lead_collision(vl, rl, vt, rt):
     # we find closer intersection
 
     circle_center = rt + vt
-    r1, r2 = find_vector_circle_intersection(rl, rt - rl, circle_center, np.dot(vl, vl))
+    r1, r2 = find_vector_circle_intersection(rl, rt - rl, circle_center, np.linalg.norm(vl))
     dist1 = np.linalg.norm(r1 - rl)
     dist2 = np.linalg.norm(r2 - rl)
     if dist1 > dist2:
@@ -59,7 +59,7 @@ def plot(vl, rl, vt, rt):
     # we find closer intersection
 
     circle_center = rt + vt
-    r1, r2 = find_vector_circle_intersection(rl, rt - rl, circle_center, np.dot(vl, vl))
+    r1, r2 = find_vector_circle_intersection(rl, rt - rl, circle_center, np.linalg.norm(vl))
     dist1 = np.linalg.norm(r1 - rl)
     dist2 = np.linalg.norm(r2 - rl)
     if dist1 > dist2:
